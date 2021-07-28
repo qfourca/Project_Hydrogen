@@ -1,0 +1,8 @@
+HTTP/1.1 200 OK
+Content-type: text/html;charset=UTF-8
+
+<html>
+
+<body>Hello, world!</body>
+
+</html>
