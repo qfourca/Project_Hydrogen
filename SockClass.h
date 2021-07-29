@@ -14,6 +14,7 @@
 #include <sys/sendfile.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <algorithm>
 #define PORT 80
 #define MYIP "192.168.35.149"
 
@@ -34,12 +35,12 @@ class ClientSock : public Sock
 private:
 public:
     char recivedData[BUFSIZ];
+
     int AcceptConnection(int serverSocket);
     sockaddr *ReturnSockAdressP();
     void AcceptSocket(int serverSocket);
     int SendFile(const char *fileName);
     int PutInRecivedData(const char *input);
-    //char *OutRecivedData();
 };
 
 class ServerSock : public Sock

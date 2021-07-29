@@ -10,6 +10,7 @@ extern char recieveBuffer[BUFSIZ];
 
 void MainFunction();
 void SendDataFunction();
+int ReadData();
 
 int SendMessage(int socket);
 int CommandReader();

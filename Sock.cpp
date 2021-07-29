@@ -1,5 +1,5 @@
 #include "SockClass.h"
-
+////////////////////////////////////////////
 void Sock::SockAdressClear()
 {
     memset(&thisSocketAdress, 0, sizeof(thisSocketAdress));
@@ -8,7 +8,7 @@ void Sock::SocketDefine()
 {
     thisSocket = socket(PF_INET, SOCK_STREAM, 0);
 }
-
+///////////////////////////////////////////
 int ClientSock::AcceptConnection(int serverSocket)
 {
     thisSocket = accept(serverSocket, (struct sockaddr *)&thisSocketAdress, &adressLen);
@@ -22,7 +22,6 @@ void ClientSock::AcceptSocket(int serverSocket)
 {
     thisSocket = accept(serverSocket, ReturnSockAdressP(), &adressLen);
 }
-
 int ClientSock::SendFile(const char *fileName)
 {
     struct stat stbuf;
@@ -47,7 +46,7 @@ int ClientSock::PutInRecivedData(const char *input)
 {
     return strcmp(recivedData, input);
 }
-
+//////////////////////////////////////////////
 int ServerSock::BindAndListenSocketInPort(unsigned int portNum)
 {
     SockAdressClear();
@@ -71,3 +70,4 @@ int ServerSock::BindAndListenSocketInPort(unsigned int portNum)
     printf("Server Open! %s:%u\n\n", MYIP, ntohs(thisSocketAdress.sin_port));
     return 0;
 }
+/////////////////////////////////////////////////
