@@ -31,11 +31,16 @@ public:
 
 class ClientSock : public Sock
 {
+private:
+    char recivedData[BUFSIZ];
+
 public:
     int AcceptConnection(int serverSocket);
     sockaddr *ReturnSockAdressP();
     void AcceptSocket(int serverSocket);
     int SendFile(const char *fileName);
+    int PutInRecivedData(const char *input);
+    char *OutRecivedData();
 };
 
 class ServerSock : public Sock

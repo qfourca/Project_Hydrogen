@@ -33,6 +33,15 @@ int ClientSock::SendFile(const char *fileName)
     return returN;
 }
 
+int ClientSock::PutInRecivedData(const char *input)
+{
+    return strcmp(recivedData, input);
+}
+char *ClientSock::OutRecivedData()
+{
+    return recivedData;
+}
+
 int ServerSock::BindAndListenSocketInPort(unsigned int portNum)
 {
     SockAdressClear();

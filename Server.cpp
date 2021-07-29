@@ -1,35 +1,28 @@
 #include "Server.h"
 
 ServerSock serverSock;
-ClientSock clientSock;
-char sendBuffer[BUFSIZ];
-char recieveBuffer[BUFSIZ];
-int sendedFileSize;
+char buffer[BUFSIZ];
+std::queue<ClientSock> clientWaitQueue;
 
-extern void tempFunction()
+extern void MainFunction()
 {
+
     serverSock.SocketDefine();
     serverSock.SockAdressClear();
     serverSock.BindAndListenSocketInPort(PORT);
 
     while (true)
     {
+        ClientSock clientSock;
         clientSock.AcceptConnection(serverSock.thisSocket);
-        printf("----------------------------------------------------\n");
-        //printf("%d\n", clientAdress.sin_addr.s_addr);
-        if (read(clientSock.thisSocket, recieveBuffer, sizeof(recieveBuffer)) > 0)
-            printf("%s", recieveBuffer);
-        printf("----------------------------------------------------\n");
-        sendedFileSize = clientSock.SendFile("send.txt");
-        if (!sendedFileSize)
-            printf("Failed to send message\n");
-        else
-            printf("%d bytes data sended sucessfully!\n", sendedFileSize);
-        close(clientSock.thisSocket);
+        if (read(clientSock.thisSocket, clientSock.OutRecivedData(), BUFSIZ) > 0)
+        {
+            clientWaitQueue.push(clientSock);
+        }
     }
 }
 
-int CommandReader()
+extern int CommandReader()
 {
     char command[128];
     for (;;)
@@ -39,6 +32,35 @@ int CommandReader()
         {
             close(serverSock.thisSocket);
             exit(0);
+        }
+    }
+}
+
+extern void SendDataFunction()
+{
+    for (;;)
+    {
+        if (clientWaitQueue.size() > 0)
+        {
+            //printf("%ld", clientWaitQueue.size());
+            int temp;
+            ClientSock tempClient = clientWaitQueue.front();
+            printf("----------------------------------------------------\n");
+            printf("%s", tempClient.OutRecivedData());
+            printf("----------------------------------------------------\n");
+            temp = tempClient.SendFile("send/header.txt");
+            if (temp == -1)
+                perror("Failed to send message\n");
+            else
+                printf("%d bytes data sended sucessfully!\n", temp);
+
+            temp = tempClient.SendFile("send/main.html");
+            if (temp == -1)
+                perror("Failed to send message\n");
+            else
+                printf("%d bytes data sended sucessfully!\n", temp);
+            clientWaitQueue.pop();
+            //printf("remained : %ld", clientWaitQueue.size());
         }
     }
 }
