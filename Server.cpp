@@ -11,11 +11,11 @@ extern void MainFunction()
     serverSock.SockAdressClear();
     serverSock.BindAndListenSocketInPort(PORT);
 
-    while (true)
+    for (;;)
     {
         ClientSock clientSock;
         clientSock.AcceptConnection(serverSock.thisSocket);
-        if (read(clientSock.thisSocket, clientSock.OutRecivedData(), BUFSIZ) > 0)
+        if (read(clientSock.thisSocket, clientSock.recivedData, BUFSIZ) > 0)
         {
             clientWaitQueue.push(clientSock);
         }
@@ -33,6 +33,10 @@ extern int CommandReader()
             close(serverSock.thisSocket);
             exit(0);
         }
+        else if (!strcmp(command, "info"))
+        {
+            printf("%ld개의 전송을 대기중입니다\n", clientWaitQueue.size());
+        }
     }
 }
 
@@ -40,27 +44,19 @@ extern void SendDataFunction()
 {
     for (;;)
     {
-        if (clientWaitQueue.size() > 0)
+        if (!clientWaitQueue.empty())
         {
-            //printf("%ld", clientWaitQueue.size());
             int temp;
             ClientSock tempClient = clientWaitQueue.front();
             printf("----------------------------------------------------\n");
-            printf("%s", tempClient.OutRecivedData());
+            printf("%s", tempClient.recivedData);
             printf("----------------------------------------------------\n");
-            temp = tempClient.SendFile("send/header.txt");
-            if (temp == -1)
-                perror("Failed to send message\n");
-            else
-                printf("%d bytes data sended sucessfully!\n", temp);
 
-            temp = tempClient.SendFile("send/main.html");
-            if (temp == -1)
-                perror("Failed to send message\n");
-            else
-                printf("%d bytes data sended sucessfully!\n", temp);
+            tempClient.SendFile("send/header.txt");
+            tempClient.SendFile("send/main.html");
+
             clientWaitQueue.pop();
-            //printf("remained : %ld", clientWaitQueue.size());
+            close(tempClient.thisSocket);
         }
     }
 }

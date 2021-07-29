@@ -28,18 +28,24 @@ int ClientSock::SendFile(const char *fileName)
     struct stat stbuf;
     int inFile = open(fileName, O_RDONLY);
     fstat(inFile, &stbuf);
-    int returN = sendfile(thisSocket, inFile, SEEK_SET, 1000);
-    close(inFile);
-    return returN;
+    int sendedFileSize = sendfile(thisSocket, inFile, SEEK_SET, BUFSIZ);
+    if (sendedFileSize == -1)
+    {
+        perror("Failed to send message\n");
+        close(inFile);
+        return -1;
+    }
+    else
+    {
+        printf("%d bytes data sended sucessfully! filename : %s\n", sendedFileSize, fileName);
+        close(inFile);
+        return sendedFileSize;
+    }
 }
 
 int ClientSock::PutInRecivedData(const char *input)
 {
     return strcmp(recivedData, input);
-}
-char *ClientSock::OutRecivedData()
-{
-    return recivedData;
 }
 
 int ServerSock::BindAndListenSocketInPort(unsigned int portNum)

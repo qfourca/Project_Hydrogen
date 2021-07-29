@@ -1,5 +1,4 @@
 #include "SockClass.h"
-#include "Customio.h"
 #include <queue>
 #define PORT 80
 #define MYIP "192.168.35.149"
