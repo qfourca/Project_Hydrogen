@@ -21,13 +21,12 @@
 class Sock
 {
 protected:
+    Sock();
     sockaddr_in thisSocketAdress;
     unsigned int adressLen = sizeof(thisSocketAdress);
 
 public:
     int thisSocket; //소켓 번호
-    void SockAdressClear();
-    void SocketDefine(); //소켓 선언
 };
 
 class ClientSock : public Sock
@@ -47,7 +46,8 @@ public:
 
 class ServerSock : public Sock
 {
+
 private:
 public:
-    int BindAndListenSocketInPort(unsigned int portNum);
+    ServerSock();
 };

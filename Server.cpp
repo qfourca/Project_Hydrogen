@@ -7,11 +7,6 @@ std::queue<ClientSock> recvWaitQueue;
 
 extern void MainFunction()
 {
-
-    serverSock.SocketDefine();
-    serverSock.SockAdressClear();
-    serverSock.BindAndListenSocketInPort(PORT);
-
     for (;;)
     {
         ClientSock clientSock;
