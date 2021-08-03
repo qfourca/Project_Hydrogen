@@ -1,5 +1,7 @@
 #include "SockClass.h"
 #include <queue>
+#include <vector>
+#include <algorithm>
 #define PORT 80
 #define MYIP "192.168.35.149"
 
@@ -10,6 +12,7 @@ extern char recieveBuffer[BUFSIZ];
 
 void MainFunction();
 void SendDataFunction();
+void RecieveDataFunction();
 int ReadData();
 
 int SendMessage(int socket);

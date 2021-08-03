@@ -46,6 +46,9 @@ int ClientSock::PutInRecivedData(const char *input)
 {
     return strcmp(recivedData, input);
 }
+ClientSock::ClientSock()
+{
+}
 //////////////////////////////////////////////
 int ServerSock::BindAndListenSocketInPort(unsigned int portNum)
 {

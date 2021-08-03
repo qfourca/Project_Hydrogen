@@ -25,22 +25,24 @@ protected:
     unsigned int adressLen = sizeof(thisSocketAdress);
 
 public:
-    int thisSocket;
+    int thisSocket; //소켓 번호
     void SockAdressClear();
-    void SocketDefine();
+    void SocketDefine(); //소켓 선언
 };
 
 class ClientSock : public Sock
 {
 private:
 public:
-    char recivedData[BUFSIZ];
+    char recivedData[BUFSIZ]; //임시로 데이터를 저장할 곳
 
-    int AcceptConnection(int serverSocket);
+    ClientSock();
+
+    int AcceptConnection(int serverSocket); //서버연결
     sockaddr *ReturnSockAdressP();
-    void AcceptSocket(int serverSocket);
-    int SendFile(const char *fileName);
-    int PutInRecivedData(const char *input);
+    void AcceptSocket(int serverSocket);     //소켓 연결
+    int SendFile(const char *fileName);      //파일전송
+    int PutInRecivedData(const char *input); //파일 입력
 };
 
 class ServerSock : public Sock

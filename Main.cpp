@@ -3,9 +3,10 @@ int main()
 {
     std::thread mainThread(MainFunction);
     std::thread sendDataThread(SendDataFunction);
-    //std::thread recieveDataThread(RecieveDataFunction);
+    std::thread recieveDataThread(RecieveDataFunction);
 
     CommandReader();
     sendDataThread.join();
     mainThread.join();
+    recieveDataThread.join();
 }

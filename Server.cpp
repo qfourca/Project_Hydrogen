@@ -3,6 +3,7 @@
 ServerSock serverSock;
 char buffer[BUFSIZ];
 std::queue<ClientSock> clientWaitQueue;
+std::queue<ClientSock> recvWaitQueue;
 
 extern void MainFunction()
 {
@@ -57,6 +58,16 @@ extern void SendDataFunction()
 
             clientWaitQueue.pop();
             close(tempClient.thisSocket);
+        }
+    }
+}
+extern void RecieveDataFunction()
+{
+    std::vector<std::thread> threadSTL();
+    for (;;)
+    {
+        if (!recvWaitQueue.empty())
+        {
         }
     }
 }
