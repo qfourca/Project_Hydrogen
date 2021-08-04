@@ -13,5 +13,5 @@ int main()
 
     sendDataThread.join();
     mainThread1.join();
-    //mainThread2.join();
+    mainThread2.join();
 }

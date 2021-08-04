@@ -15,7 +15,9 @@ extern void MainFunction()
         socketQueueMutex.unlock();
         if (read(clientSock.thisSocket, clientSock.recivedData, BUFSIZ) > 0)
         {
+            //socketQueueMutex.lock();
             clientWaitQueue.push(clientSock);
+            //socketQueueMutex.unlock();
         }
     }
 }
@@ -49,14 +51,16 @@ extern void SendDataFunction()
         if (!clientWaitQueue.empty())
         {
             int temp;
+            socketQueueMutex.lock();
             ClientSock tempClient = clientWaitQueue.front();
             clientWaitQueue.pop();
+            socketQueueMutex.unlock();
             printf("----------------------------------------------------\n");
             printf("%s", tempClient.recivedData);
             printf("----------------------------------------------------\n");
 
-            //std::cout << tempClient.Interpreter() << std::endl;
-            tempClient.Interpreter();
+            std::cout << tempClient.Interpreter() << std::endl;
+            //tempClient.Interpreter();
             close(tempClient.thisSocket);
         }
     }

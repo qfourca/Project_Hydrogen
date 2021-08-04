@@ -68,22 +68,26 @@ int ClientSock::whereIsSlash()
     for (; recivedData[address] != '/'; address++)
     {
     }
-    return address + 1;
+    for (++address; recivedData[address] == ' '; address++)
+    {
+    }
+    return address;
 }
 int ClientSock::Interpreter()
 {
+
     //SendFile("send/header.txt");
     //printf("%c\n", recivedData[whereIsSlash()]);
     switch (recivedData[whereIsSlash()])
     {
     case 'H':
-        SendFile("send/header");
+        SendFile("send/main.html");
         return DEFAULT;
     case 'f':
         SendFile("send/favicon.ico");
         return FAVICON;
-    case '1':
-        SendFile("send/1-3.css");
+    case 'm':
+        SendFile("send/mycss.css");
         return CSS;
     default:
         SendFile("send/main.html");
