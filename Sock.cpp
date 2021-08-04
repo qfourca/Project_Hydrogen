@@ -23,6 +23,17 @@ void ClientSock::AcceptSocket(int serverSocket)
 }
 int ClientSock::SendFile(const char *fileName)
 {
+    /*
+    char temp[6] = "send/";
+    for (int i = 0; fileName[i] != '\0'; i++)
+    {
+        if (fileName[i] == '/')
+        {
+            goto Jump;
+        }
+    }
+    strcat(temp, fileName);
+Jump:;*/
     struct stat stbuf;
     int inFile = open(fileName, O_RDONLY);
     fstat(inFile, &stbuf);
@@ -47,6 +58,37 @@ int ClientSock::PutInRecivedData(const char *input)
 }
 ClientSock::ClientSock()
 {
+    for (int address = 0; recivedData[address] != '/'; address++)
+    {
+    }
+}
+int ClientSock::whereIsSlash()
+{
+    int address = 0;
+    for (; recivedData[address] != '/'; address++)
+    {
+    }
+    return address + 1;
+}
+int ClientSock::Interpreter()
+{
+    //SendFile("send/header.txt");
+    //printf("%c\n", recivedData[whereIsSlash()]);
+    switch (recivedData[whereIsSlash()])
+    {
+    case 'H':
+        SendFile("send/header");
+        return DEFAULT;
+    case 'f':
+        SendFile("send/favicon.ico");
+        return FAVICON;
+    case '1':
+        SendFile("send/1-3.css");
+        return CSS;
+    default:
+        SendFile("send/main.html");
+        return ERROR;
+    }
 }
 
 ////////////////////-------------------------//////////////////////////
@@ -65,10 +107,18 @@ ServerSock::ServerSock()
         perror("Can not Bind");
         exit(1);
     }
+    else
+    {
+        printf("Bind Successed!\n");
+    }
     if (listen(thisSocket, 5) == -1)
     {
         perror("listen Fail");
         exit(1);
+    }
+    else
+    {
+        printf("Listen Successed\n");
     }
     printf("Server Open! %s:%u\n\n", MYIP, ntohs(thisSocketAdress.sin_port));
 }

@@ -3,13 +3,16 @@
 ServerSock serverSock;
 char buffer[BUFSIZ];
 std::queue<ClientSock> clientWaitQueue;
+std::mutex socketQueueMutex;
 
 extern void MainFunction()
 {
     for (;;)
     {
+        socketQueueMutex.lock();
         ClientSock clientSock;
         clientSock.AcceptConnection(serverSock.thisSocket);
+        socketQueueMutex.unlock();
         if (read(clientSock.thisSocket, clientSock.recivedData, BUFSIZ) > 0)
         {
             clientWaitQueue.push(clientSock);
@@ -32,6 +35,10 @@ extern int CommandReader()
         {
             printf("%ld개의 전송을 대기중입니다\n", clientWaitQueue.size());
         }
+        else
+        {
+            printf("Unknown Command\n");
+        }
     }
 }
 
@@ -43,14 +50,13 @@ extern void SendDataFunction()
         {
             int temp;
             ClientSock tempClient = clientWaitQueue.front();
+            clientWaitQueue.pop();
             printf("----------------------------------------------------\n");
             printf("%s", tempClient.recivedData);
             printf("----------------------------------------------------\n");
 
-            tempClient.SendFile("send/header.txt");
-            tempClient.SendFile("send/main.html");
-
-            clientWaitQueue.pop();
+            //std::cout << tempClient.Interpreter() << std::endl;
+            tempClient.Interpreter();
             close(tempClient.thisSocket);
         }
     }

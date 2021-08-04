@@ -9,6 +9,7 @@ extern ServerSock serverSock;
 extern ClientSock clientSock;
 extern char sendBuffer[BUFSIZ];
 extern char recieveBuffer[BUFSIZ];
+extern std::mutex socketQueueMutex;
 
 void MainFunction();
 void SendDataFunction();
