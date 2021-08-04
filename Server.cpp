@@ -4,21 +4,30 @@ ServerSock serverSock;
 char buffer[BUFSIZ];
 std::queue<ClientSock> clientWaitQueue;
 std::mutex socketQueueMutex;
+int arrayIndex = 1;
+
+ClientSock array[ARRAYSIZE];
+//std::vector<std::thread> array;
+std::thread threadArray[ARRAYSIZE];
 
 extern void MainFunction()
 {
     for (;;)
     {
-        socketQueueMutex.lock();
+        //socketQueueMutex.lock();
         ClientSock clientSock;
         clientSock.AcceptConnection(serverSock.thisSocket);
-        socketQueueMutex.unlock();
+        array[arrayIndex] = clientSock;
+        if (arrayIndex >= ARRAYSIZE - 1)
+            arrayIndex = 1;
+        else
+            arrayIndex++;
+        /*
         if (read(clientSock.thisSocket, clientSock.recivedData, BUFSIZ) > 0)
         {
-            //socketQueueMutex.lock();
             clientWaitQueue.push(clientSock);
-            //socketQueueMutex.unlock();
-        }
+        }*/
+        //socketQueueMutex.unlock();
     }
 }
 
@@ -62,6 +71,20 @@ extern void SendDataFunction()
             std::cout << tempClient.Interpreter() << std::endl;
             //tempClient.Interpreter();
             close(tempClient.thisSocket);
+        }
+    }
+}
+
+extern void Sex(int myAccessPoint)
+{
+    for (;;)
+    {
+        if (array[myAccessPoint].thisSocket != -1)
+        {
+            if (read(array[myAccessPoint].thisSocket, array[myAccessPoint].recivedData, BUFSIZ) > 0)
+            {
+                clientWaitQueue.push(array[myAccessPoint]);
+            }
         }
     }
 }

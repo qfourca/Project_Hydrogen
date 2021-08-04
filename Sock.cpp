@@ -58,9 +58,6 @@ int ClientSock::PutInRecivedData(const char *input)
 }
 ClientSock::ClientSock()
 {
-    for (int address = 0; recivedData[address] != '/'; address++)
-    {
-    }
 }
 int ClientSock::whereIsSlash()
 {
