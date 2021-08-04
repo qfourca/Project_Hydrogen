@@ -12,7 +12,6 @@ extern char recieveBuffer[BUFSIZ];
 
 void MainFunction();
 void SendDataFunction();
-void RecieveDataFunction();
 int ReadData();
 
 int SendMessage(int socket);

@@ -1,12 +1,13 @@
 #include "Server.h"
 int main()
 {
-    std::thread mainThread(MainFunction);
+    std::thread mainThread1(MainFunction);
+    std::thread mainThread2(MainFunction);
     std::thread sendDataThread(SendDataFunction);
-    std::thread recieveDataThread(RecieveDataFunction);
 
     CommandReader();
+
     sendDataThread.join();
-    mainThread.join();
-    recieveDataThread.join();
+    mainThread1.join();
+    mainThread2.join();
 }
