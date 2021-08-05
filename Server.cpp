@@ -7,14 +7,12 @@ std::mutex socketQueueMutex;
 int arrayIndex = 1;
 
 ClientSock array[ARRAYSIZE];
-//std::vector<std::thread> array;
 std::thread threadArray[ARRAYSIZE];
 
 extern void MainFunction()
 {
     for (;;)
     {
-        //socketQueueMutex.lock();
         ClientSock clientSock;
         clientSock.AcceptConnection(serverSock.thisSocket);
         array[arrayIndex] = clientSock;
@@ -22,12 +20,6 @@ extern void MainFunction()
             arrayIndex = 1;
         else
             arrayIndex++;
-        /*
-        if (read(clientSock.thisSocket, clientSock.recivedData, BUFSIZ) > 0)
-        {
-            clientWaitQueue.push(clientSock);
-        }*/
-        //socketQueueMutex.unlock();
     }
 }
 
@@ -60,22 +52,22 @@ extern void SendDataFunction()
         if (!clientWaitQueue.empty())
         {
             int temp;
-            socketQueueMutex.lock();
+            //socketQueueMutex.lock();
             ClientSock tempClient = clientWaitQueue.front();
             clientWaitQueue.pop();
-            socketQueueMutex.unlock();
+            //socketQueueMutex.unlock();
             printf("----------------------------------------------------\n");
             printf("%s", tempClient.recivedData);
             printf("----------------------------------------------------\n");
 
-            std::cout << tempClient.Interpreter() << std::endl;
-            //tempClient.Interpreter();
+            //std::cout << tempClient.Interpreter() << std::endl;
+            tempClient.Interpreter();
             close(tempClient.thisSocket);
         }
     }
 }
 
-extern void Sex(int myAccessPoint)
+extern void Input(int myAccessPoint)
 {
     for (;;)
     {
@@ -85,6 +77,7 @@ extern void Sex(int myAccessPoint)
             {
                 clientWaitQueue.push(array[myAccessPoint]);
             }
+            array[myAccessPoint].thisSocket = -1;
         }
     }
 }

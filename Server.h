@@ -5,7 +5,7 @@
 
 #define PORT 80
 #define MYIP "192.168.35.149"
-#define ARRAYSIZE 3
+#define ARRAYSIZE 5
 
 extern ServerSock serverSock;
 extern ClientSock clientSock;
@@ -22,7 +22,7 @@ void MainFunction();
 void SendDataFunction();
 int ReadData();
 
-void Sex(int myAccessPoint);
+void Input(int myAccessPoint);
 
 int SendMessage(ClientSock clientSock);
 int CommandReader();
