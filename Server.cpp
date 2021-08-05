@@ -13,8 +13,16 @@ extern void MainFunction()
 {
     for (;;)
     {
+
         ClientSock clientSock;
         clientSock.AcceptConnection(serverSock.thisSocket);
+        /*
+        if (read(clientSock.thisSocket, clientSock.recivedData, BUFSIZ) > 0)
+        {
+            clientWaitQueue.push(clientSock);
+        }
+        */
+
         array[arrayIndex] = clientSock;
         if (arrayIndex >= ARRAYSIZE - 1)
             arrayIndex = 1;
@@ -75,7 +83,9 @@ extern void Input(int myAccessPoint)
         {
             if (read(array[myAccessPoint].thisSocket, array[myAccessPoint].recivedData, BUFSIZ) > 0)
             {
+                socketQueueMutex.lock();
                 clientWaitQueue.push(array[myAccessPoint]);
+                socketQueueMutex.unlock();
             }
             array[myAccessPoint].thisSocket = -1;
         }

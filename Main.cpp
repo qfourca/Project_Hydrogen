@@ -12,6 +12,7 @@ int main()
         threadArray[i] = std::thread(Input, i);
         printf("inputThread %d opened\n", i + 1);
     }
+
     std::thread sendDataThread(SendDataFunction);
     printf("SendData Thread Opened\n\n");
 
@@ -19,6 +20,7 @@ int main()
 
     sendDataThread.join();
     mainThread.join();
+
     for (int i = 0; i < ARRAYSIZE; i++)
     {
         threadArray[i].join();

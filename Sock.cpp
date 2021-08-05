@@ -1,4 +1,5 @@
 #include "SockClass.h"
+#define FOLDER 5
 ////////////////////////----------------------------------////////////////////
 Sock::Sock()
 {
@@ -35,19 +36,23 @@ int ClientSock::SendFile(const char *fileName)
     strcat(temp, fileName);
 Jump:;*/
     struct stat stbuf;
-    int inFile = open(fileName, O_RDONLY);
-    fstat(inFile, &stbuf);
-    int sendedFileSize = sendfile(thisSocket, inFile, SEEK_SET, BUFSIZ);
+    int inFileDescriptor = open(fileName, O_RDONLY);
+    if (inFileDescriptor == -1)
+    {
+        return -1;
+    }
+    fstat(inFileDescriptor, &stbuf);
+    int sendedFileSize = sendfile(thisSocket, inFileDescriptor, SEEK_SET, 2147479552);
     if (sendedFileSize == -1)
     {
         perror("Failed to send message\n");
-        close(inFile);
+        close(inFileDescriptor);
         return -1;
     }
     else
     {
         printf("%d bytes data sended sucessfully! filename : %s\n", sendedFileSize, fileName);
-        close(inFile);
+        close(inFileDescriptor);
         return sendedFileSize;
     }
 }
@@ -58,6 +63,12 @@ int ClientSock::PutInRecivedData(const char *input)
 }
 ClientSock::ClientSock()
 {
+    int sockopt = 1;
+    if (setsockopt(thisSocket, IPPROTO_TCP, TCP_CORK, (const char *)&sockopt, sizeof(sockopt)) == -1)
+    {
+        perror("ClientSocket Setting Error\n");
+        exit(1);
+    }
 }
 int ClientSock::whereIsSlash()
 {
@@ -70,11 +81,36 @@ int ClientSock::whereIsSlash()
     }
     return address;
 }
+int ClientSock::returnFileName(char *fileName)
+{
+    int startIndex = whereIsSlash();
+    int endIndex = startIndex;
+    for (; recivedData[endIndex] != ' '; endIndex++)
+    {
+    }
+    strcpy(fileName, "send/");
+    for (int inputIndex = FOLDER; startIndex < endIndex; startIndex++)
+    {
+        fileName[inputIndex] = recivedData[startIndex];
+        inputIndex++;
+    }
+    return 0;
+}
 int ClientSock::Interpreter()
 {
-
+    char temp[512] = {0};
+    returnFileName(temp);
+    printf("%s\n", temp);
+    if (SendFile(temp) == -1)
+    {
+        printf("\x1b[31m I Can't found File\n\x1b[0m");
+        SendFile("send/index.html");
+    }
+    //printf("%s\n", temp);
+    return DEFAULT;
     //SendFile("send/header.txt");
     //printf("%c\n", recivedData[whereIsSlash()]);
+    /*
     switch (recivedData[whereIsSlash()])
     {
     case 'H':
@@ -90,6 +126,7 @@ int ClientSock::Interpreter()
         SendFile("send/main.html");
         return ERROR;
     }
+    */
 }
 
 ////////////////////-------------------------//////////////////////////
@@ -98,7 +135,7 @@ ServerSock::ServerSock()
 {
     thisSocketAdress.sin_family = AF_INET;
     thisSocketAdress.sin_port = htons(PORT);
-    if ((thisSocketAdress.sin_addr.s_addr = inet_addr(MYIP)) == -1)
+    if ((thisSocketAdress.sin_addr.s_addr = INADDR_ANY) == -1)
     {
         perror("Wrong IP adress");
         exit(1);

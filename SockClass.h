@@ -35,6 +35,7 @@ class ClientSock : public Sock
 {
 private:
     int whereIsSlash();
+    int returnFileName(char *fileName);
 
 public:
     char recivedData[BUFSIZ]; //임시로 데이터를 저장할 곳
