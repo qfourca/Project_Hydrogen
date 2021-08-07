@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <mutex>
 #define PORT 80
+#define SENDFOLDER "send/"
 #define MYIP "192.168.35.149"
 
 class Sock
@@ -38,15 +39,15 @@ private:
     int returnFileName(char *fileName);
 
 public:
+    static int folderSize;
     char recivedData[BUFSIZ]; //임시로 데이터를 저장할 곳
 
     ClientSock();
 
     int AcceptConnection(int serverSocket); //서버연결
     sockaddr *ReturnSockAdressP();
-    void AcceptSocket(int serverSocket);     //소켓 연결
-    int SendFile(const char *fileName);      //파일전송
-    int PutInRecivedData(const char *input); //파일 입력
+    void AcceptSocket(int serverSocket); //소켓 연결
+    int SendFile(const char *fileName);  //파일전송
     int Interpreter();
 };
 

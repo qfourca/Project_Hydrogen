@@ -4,30 +4,28 @@ ServerSock serverSock;
 char buffer[BUFSIZ];
 std::queue<ClientSock> clientWaitQueue;
 std::mutex socketQueueMutex;
-int arrayIndex = 1;
-
-ClientSock array[ARRAYSIZE];
-std::thread threadArray[ARRAYSIZE];
+int arrayIndex = 0;
+ClientSock clientSockWithReadThread[READTHREADSIZE];
+std::thread readArray[READTHREADSIZE];
+std::mutex readThreadMutex[READTHREADSIZE];
+bool speed = false;
 
 extern void MainFunction()
 {
+    ClientSock clientSock;
     for (;;)
     {
-
-        ClientSock clientSock;
-        clientSock.AcceptConnection(serverSock.thisSocket);
-        /*
-        if (read(clientSock.thisSocket, clientSock.recivedData, BUFSIZ) > 0)
+        for (; clientSockWithReadThread[arrayIndex].thisSocket != -1;)
         {
-            clientWaitQueue.push(clientSock);
+            //speed = true;
+            usleep(10);
         }
-        */
-
-        array[arrayIndex] = clientSock;
-        if (arrayIndex >= ARRAYSIZE - 1)
-            arrayIndex = 1;
+        clientSock.AcceptConnection(serverSock.thisSocket);
+        if (arrayIndex >= READTHREADSIZE - 1)
+            arrayIndex = 0;
         else
             arrayIndex++;
+        clientSockWithReadThread[arrayIndex].thisSocket = clientSock.thisSocket;
     }
 }
 
@@ -55,23 +53,25 @@ extern int CommandReader()
 
 extern void SendDataFunction()
 {
+    ClientSock myClient;
     for (;;)
     {
         if (!clientWaitQueue.empty())
         {
-            int temp;
-            //socketQueueMutex.lock();
-            ClientSock tempClient = clientWaitQueue.front();
+            myClient = clientWaitQueue.front();
+            socketQueueMutex.lock();
             clientWaitQueue.pop();
-            //socketQueueMutex.unlock();
+            socketQueueMutex.unlock();
             printf("----------------------------------------------------\n");
-            printf("%s", tempClient.recivedData);
+            printf("%s", myClient.recivedData);
             printf("----------------------------------------------------\n");
-
+            myClient.SendFile("send/header.txt");
             //std::cout << tempClient.Interpreter() << std::endl;
-            tempClient.Interpreter();
-            close(tempClient.thisSocket);
+            myClient.Interpreter(); //데이터를 처리하고 그에 맞는 데이터를 전송하는 함수
+            close(myClient.thisSocket);
         }
+        else
+            usleep(10);
     }
 }
 
@@ -79,15 +79,18 @@ extern void Input(int myAccessPoint)
 {
     for (;;)
     {
-        if (array[myAccessPoint].thisSocket != -1)
+        readThreadMutex[myAccessPoint].lock();
+        if (read(clientSockWithReadThread[myAccessPoint].thisSocket, clientSockWithReadThread[myAccessPoint].recivedData, BUFSIZ) > 0)
         {
-            if (read(array[myAccessPoint].thisSocket, array[myAccessPoint].recivedData, BUFSIZ) > 0)
+            socketQueueMutex.lock();
+            clientWaitQueue.push(clientSockWithReadThread[myAccessPoint]);
+            socketQueueMutex.unlock();
+            for (int i = 0; i < BUFSIZ; i++)
             {
-                socketQueueMutex.lock();
-                clientWaitQueue.push(array[myAccessPoint]);
-                socketQueueMutex.unlock();
-            }
-            array[myAccessPoint].thisSocket = -1;
+                clientSockWithReadThread[myAccessPoint].recivedData[i] = 0;
+            };
         }
+        clientSockWithReadThread[myAccessPoint].thisSocket = -1;
+        readThreadMutex[myAccessPoint].unlock();
     }
 }

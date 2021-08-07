@@ -1,4 +1,0 @@
-HTTP/1.1 200 OK
-Cache-control: no-store
-Content-type: text/html;charset=UTF-8
-

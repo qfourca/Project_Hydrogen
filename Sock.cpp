@@ -24,17 +24,6 @@ void ClientSock::AcceptSocket(int serverSocket)
 }
 int ClientSock::SendFile(const char *fileName)
 {
-    /*
-    char temp[6] = "send/";
-    for (int i = 0; fileName[i] != '\0'; i++)
-    {
-        if (fileName[i] == '/')
-        {
-            goto Jump;
-        }
-    }
-    strcat(temp, fileName);
-Jump:;*/
     struct stat stbuf;
     int inFileDescriptor = open(fileName, O_RDONLY);
     if (inFileDescriptor == -1)
@@ -55,11 +44,6 @@ Jump:;*/
         close(inFileDescriptor);
         return sendedFileSize;
     }
-}
-
-int ClientSock::PutInRecivedData(const char *input)
-{
-    return strcmp(recivedData, input);
 }
 ClientSock::ClientSock()
 {
@@ -83,13 +67,13 @@ int ClientSock::whereIsSlash()
 }
 int ClientSock::returnFileName(char *fileName)
 {
-    int startIndex = whereIsSlash();
+    int startIndex = whereIsSlash(); //fileName의 시작을 찾는 과정
     int endIndex = startIndex;
-    for (; recivedData[endIndex] != ' '; endIndex++)
+    for (; recivedData[endIndex] != ' ' && recivedData[endIndex] != '\n'; endIndex++) //fileName의 끝을 찾는 과정
     {
     }
-    strcpy(fileName, "send/");
-    for (int inputIndex = FOLDER; startIndex < endIndex; startIndex++)
+    strcpy(fileName, SENDFOLDER);
+    for (int inputIndex = FOLDER; startIndex < endIndex; startIndex++) //fileName에 데이터를 넣는 과정
     {
         fileName[inputIndex] = recivedData[startIndex];
         inputIndex++;
@@ -100,33 +84,21 @@ int ClientSock::Interpreter()
 {
     char temp[512] = {0};
     returnFileName(temp);
+    if (!strncmp(temp, "send/HTTP/1.1", 13))
+    {
+        for (int i = 0; i < strlen(temp); i++)
+        {
+            temp[i] = 0;
+        }
+        strcpy(temp, "send/index.html");
+    }
     printf("%s\n", temp);
     if (SendFile(temp) == -1)
     {
         printf("\x1b[31m I Can't found File\n\x1b[0m");
         SendFile("send/index.html");
     }
-    //printf("%s\n", temp);
     return DEFAULT;
-    //SendFile("send/header.txt");
-    //printf("%c\n", recivedData[whereIsSlash()]);
-    /*
-    switch (recivedData[whereIsSlash()])
-    {
-    case 'H':
-        SendFile("send/main.html");
-        return DEFAULT;
-    case 'f':
-        SendFile("send/favicon.ico");
-        return FAVICON;
-    case 'm':
-        SendFile("send/mycss.css");
-        return CSS;
-    default:
-        SendFile("send/main.html");
-        return ERROR;
-    }
-    */
 }
 
 ////////////////////-------------------------//////////////////////////

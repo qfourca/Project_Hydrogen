@@ -2,27 +2,33 @@
 
 int main()
 {
-    printf("Main Function Started\n");
-    std::thread mainThread(MainFunction);
-    printf("mainThread Opened\n");
+    printf("Main Function Started\n"); //main함수의 시작을 알림
 
-    for (int i = 0; i < ARRAYSIZE; i++)
+    std::thread sendThread[SENDTHREADSIZE]; //전송 쓰레드 선언
+
+    for (int i = 0; i < READTHREADSIZE; i++)
     {
-        array[i].thisSocket = -1;
-        threadArray[i] = std::thread(Input, i);
-        printf("inputThread %d opened\n", i + 1);
+        clientSockWithReadThread[i].thisSocket = -1;
+        readArray[i] = std::thread(Input, i);
+        printf("inputThread %d opened\n", i + 1); //inputThread실행
     }
-
-    std::thread sendDataThread(SendDataFunction);
+    for (int i = 0; i < SENDTHREADSIZE; i++)
+    {
+        sendThread[i] = std::thread(SendDataFunction); //sendThread실행
+    }
     printf("SendData Thread Opened\n\n");
 
+    std::thread mainThread(MainFunction);
+    printf("mainThread Opened\n"); //accept 가 들어있는 함수 실행
+
     CommandReader();
-
-    sendDataThread.join();
     mainThread.join();
-
-    for (int i = 0; i < ARRAYSIZE; i++)
+    for (int i = 0; i < SENDTHREADSIZE; i++)
     {
-        threadArray[i].join();
+        sendThread[i].join();
+    }
+    for (int i = 0; i < READTHREADSIZE; i++)
+    {
+        readArray[i].join();
     }
 }
