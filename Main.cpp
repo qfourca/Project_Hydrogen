@@ -8,8 +8,8 @@ int main()
 
     for (int i = 0; i < READTHREADSIZE; i++)
     {
-        clientSockWithReadThread[i].thisSocket = -1;
-        readArray[i] = std::thread(Input, i);
+        management[i].clientSock.thisSocket = -1;
+        management[i].readArray = std::thread(Input, i);
         printf("inputThread %d opened\n", i + 1); //inputThread실행
     }
     for (int i = 0; i < SENDTHREADSIZE; i++)
@@ -29,6 +29,6 @@ int main()
     }
     for (int i = 0; i < READTHREADSIZE; i++)
     {
-        readArray[i].join();
+        management[i].readArray.join();
     }
 }

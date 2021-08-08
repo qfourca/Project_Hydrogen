@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 
+#define SLEEPTIME 1
 #define PORT 80
 #define MYIP "192.168.35.149"
 #define READTHREADSIZE 4
@@ -14,10 +15,15 @@ extern char sendBuffer[BUFSIZ];
 extern char recieveBuffer[BUFSIZ];
 extern std::mutex socketQueueMutex;
 extern int arrayIndex;
-extern ClientSock clientSockWithReadThread[READTHREADSIZE];
-extern std::thread readArray[READTHREADSIZE];
-extern std::mutex readThreadMutex[READTHREADSIZE];
 extern bool speed;
+extern struct ReadThreadManagement management[READTHREADSIZE];
+
+struct ReadThreadManagement
+{
+    ClientSock clientSock;
+    std::thread readArray;
+    std::mutex readThreadMutex;
+};
 
 void MainFunction();
 void SendDataFunction();
