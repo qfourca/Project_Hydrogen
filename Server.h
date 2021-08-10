@@ -1,7 +1,7 @@
 #include "SockClass.h"
+#include <algorithm>
 #include <queue>
 #include <vector>
-#include <algorithm>
 
 #define SLEEPTIME 1
 #define PORT 80
@@ -16,9 +16,9 @@ extern char recieveBuffer[BUFSIZ];
 extern std::mutex socketQueueMutex;
 extern int arrayIndex;
 extern bool speed;
-extern struct ReadThreadManagement management[READTHREADSIZE];
+extern struct ThreadManagement management[READTHREADSIZE];
 
-struct ReadThreadManagement
+struct ThreadManagement
 {
     ClientSock clientSock;
     std::thread readArray;
@@ -27,6 +27,7 @@ struct ReadThreadManagement
 
 void MainFunction();
 void SendDataFunction();
+void CurrentReadData(int myAccessPoint);
 int ReadData();
 void Input(int myAccessPoint);
 int SendMessage(ClientSock clientSock);

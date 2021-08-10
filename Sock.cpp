@@ -14,14 +14,17 @@ int ClientSock::AcceptConnection(int serverSocket)
     thisSocket = accept(serverSocket, (struct sockaddr *)&thisSocketAdress, &adressLen);
     return 0;
 }
+
 sockaddr *ClientSock::ReturnSockAdressP()
 {
     return (struct sockaddr *)&thisSocketAdress;
 }
+
 void ClientSock::AcceptSocket(int serverSocket)
 {
     thisSocket = accept(serverSocket, ReturnSockAdressP(), &adressLen);
 }
+
 int ClientSock::SendFile(const char *fileName)
 {
     struct stat stbuf;
@@ -45,8 +48,25 @@ int ClientSock::SendFile(const char *fileName)
         return sendedFileSize;
     }
 }
+
+int ClientSock::SendData(const char *dataName)
+{
+    int sendedDataSize = send(thisSocket, dataName, strlen(dataName), MSG_DONTROUTE);
+    if (sendedDataSize == -1)
+    {
+        perror("Failed to send message\n");
+        return -1;
+    }
+    else
+    {
+        printf("data \" %s \" sended sucessfully!\n", dataName);
+        return sendedDataSize;
+    }
+}
+
 ClientSock::ClientSock()
 {
+    keep_conection = false;
     int sockopt = 1;
     if (setsockopt(thisSocket, IPPROTO_TCP, TCP_CORK, (const char *)&sockopt, sizeof(sockopt)) == -1)
     {
@@ -54,46 +74,66 @@ ClientSock::ClientSock()
         exit(1);
     }
 }
+
 int ClientSock::whereIsSlash()
 {
     int address = 0;
-    for (; recivedData[address] != '/'; address++)
+    for (; recivedData.recivedData[address] != '/'; address++)
     {
     }
-    for (++address; recivedData[address] == ' '; address++)
+    for (++address; recivedData.recivedData[address] == ' '; address++)
     {
     }
     return address;
 }
+
+int ClientSock::skipSpace(char *string, int startPoint)
+{
+    for (; string[startPoint] != ' '; startPoint++)
+    {
+    }
+    return startPoint;
+}
+int ClientSock::skipSpace(int startPoint)
+{
+    for (; recivedData.recivedData[startPoint] != ' '; startPoint++)
+    {
+    }
+    return startPoint;
+}
+
 int ClientSock::returnFileName(char *fileName)
 {
     int startIndex = whereIsSlash(); //fileName의 시작을 찾는 과정
     int endIndex = startIndex;
-    for (; recivedData[endIndex] != ' ' && recivedData[endIndex] != '\n'; endIndex++) //fileName의 끝을 찾는 과정
+    for (; recivedData.recivedData[endIndex] != ' ' && recivedData.recivedData[endIndex] != '\n'; endIndex++) //fileName의 끝을 찾는 과정
     {
     }
     strcpy(fileName, SENDFOLDER);
     for (int inputIndex = FOLDER; startIndex < endIndex; startIndex++) //fileName에 데이터를 넣는 과정
     {
-        fileName[inputIndex] = recivedData[startIndex];
+        fileName[inputIndex] = recivedData.recivedData[startIndex];
         inputIndex++;
     }
     return 0;
 }
+
+char *ClientSock::searchString(const char *string)
+{
+    return strstr(recivedData.recivedData, string) + strlen(string);
+}
+
 int ClientSock::Interpreter()
 {
-    char temp[512] = {0};
-    returnFileName(temp);
-    if (!strncmp(temp, "send/HTTP/1.1", 13))
+    recivedData.ProcessData();
+    printf("%s\n", recivedData.requestFile);
+    if (recivedData.requestFile[0] == 0)
     {
-        for (int i = 0; i < strlen(temp); i++)
-        {
-            temp[i] = 0;
-        }
-        strcpy(temp, "send/index.html");
+        printf("NULL\n");
+        strcpy(recivedData.requestFile, "send/index.html");
     }
-    printf("%s\n", temp);
-    if (SendFile(temp) == -1)
+    keep_conection = !strncmp(searchString("Connection: "), "keep-alive", 10);
+    if (SendFile(recivedData.requestFile) == -1)
     {
         printf("\x1b[31m I Can't found File\n\x1b[0m");
         SendFile("send/index.html");

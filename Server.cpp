@@ -5,7 +5,7 @@ char buffer[BUFSIZ];
 std::queue<ClientSock> clientWaitQueue;
 std::mutex socketQueueMutex;
 int arrayIndex = 0;
-struct ReadThreadManagement management[READTHREADSIZE];
+struct ThreadManagement management[READTHREADSIZE];
 bool speed = false;
 
 extern void MainFunction()
@@ -62,7 +62,7 @@ extern void SendDataFunction()
             clientWaitQueue.pop();
             socketQueueMutex.unlock();
             printf("----------------------------------------------------\n");
-            printf("%s", myClient.recivedData);
+            printf("%s", myClient.recivedData.recivedData);
             printf("----------------------------------------------------\n");
             //myClient.SendFile("send/header.txt");
             //std::cout << tempClient.Interpreter() << std::endl;
@@ -82,14 +82,14 @@ extern void Input(int myAccessPoint)
         {
             //management[myAccessPoint].readThreadMutex.lock();
             if (read(management[myAccessPoint].clientSock.thisSocket,
-                     management[myAccessPoint].clientSock.recivedData, BUFSIZ) > 0)
+                     management[myAccessPoint].clientSock.recivedData.recivedData, BUFSIZ) > 0)
             {
                 socketQueueMutex.lock();
                 clientWaitQueue.push(management[myAccessPoint].clientSock);
                 socketQueueMutex.unlock();
                 for (int i = 0; i < BUFSIZ; i++)
                 {
-                    management[myAccessPoint].clientSock.recivedData[i] = 0;
+                    management[myAccessPoint].clientSock.recivedData.recivedData[i] = 0;
                 };
             }
             management[myAccessPoint].clientSock.thisSocket = -1;
