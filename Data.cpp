@@ -2,50 +2,50 @@
 
 int Data::ProcessRequestMethod()
 {
-    char requestMethod[20];
-    for (workIndex = 0; recivedData[workIndex] != '/' && recivedData[workIndex] != ' '; workIndex++)
+    char request_method[20];
+    for (working_idx = 0; recived_data[working_idx] != '/' && recived_data[working_idx] != ' '; working_idx++)
     {
     }
-    strncpy(requestMethod, recivedData, workIndex);
-    if (!strcmp(requestMethod, "GET"))
+    strncpy(request_method, recived_data, working_idx);
+    if (!strcmp(request_method, "GET"))
         return GET;
-    else if (!strcmp(requestMethod, "CONNECT"))
+    else if (!strcmp(request_method, "CONNECT"))
         return CONNECT;
-    else if (!strcmp(requestMethod, "DELETE"))
+    else if (!strcmp(request_method, "DELETE"))
         return DELETE;
-    else if (!strcmp(requestMethod, "POST"))
+    else if (!strcmp(request_method, "POST"))
         return POST;
-    else if (!strcmp(requestMethod, "HEAD"))
+    else if (!strcmp(request_method, "HEAD"))
         return HEAD;
-    else if (!strcmp(requestMethod, "OPCTIONS"))
+    else if (!strcmp(request_method, "OPCTIONS"))
         return OPCTIONS;
-    else if (!strcmp(requestMethod, "PATCH"))
+    else if (!strcmp(request_method, "PATCH"))
         return PATCH;
-    else if (!strcmp(requestMethod, "PUT"))
+    else if (!strcmp(request_method, "PUT"))
         return PUT;
-    else if (!strcmp(requestMethod, "TRACE"))
+    else if (!strcmp(request_method, "TRACE"))
         return TRACE;
     else
         return UNKNOWN;
 }
 int Data::ProcessFileName()
 {
-    for (; recivedData[workIndex] != '/'; workIndex++)
+    for (; recived_data[working_idx] != '/'; working_idx++)
     {
     }
-    workIndex++;
-    if (recivedData[workIndex] == ' ')
+    working_idx++;
+    if (recived_data[working_idx] == ' ')
     {
-        requestFile[0] = 0;
+        request_file[0] = 0;
         return -1;
     }
     else
     {
-        strcpy(requestFile, SENDFOLDER);
+        strcpy(request_file, SENDFOLDER);
         int i;
-        for (i = strlen(SENDFOLDER); recivedData[workIndex] != ' '; workIndex++)
+        for (i = strlen(SENDFOLDER); recived_data[working_idx] != ' '; working_idx++)
         {
-            requestFile[i] = recivedData[workIndex];
+            request_file[i] = recived_data[working_idx];
             i++;
         }
         return i;
@@ -54,7 +54,7 @@ int Data::ProcessFileName()
 
 int Data::ProcessData()
 {
-    requestMethod = ProcessRequestMethod();
+    request_method = ProcessRequestMethod();
     ProcessFileName();
     return 0;
 }

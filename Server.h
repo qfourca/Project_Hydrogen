@@ -17,6 +17,7 @@ extern std::mutex socketQueueMutex;
 extern int arrayIndex;
 extern bool speed;
 extern struct ThreadManagement management[READTHREADSIZE];
+extern std::thread sendThread[SENDTHREADSIZE]; //전송 쓰레드 선언
 
 struct ThreadManagement
 {

@@ -7,15 +7,15 @@
 class Data
 {
 private:
-    int workIndex = 0;
+    int working_idx = 0; //현재 작업중인 인덱스
     int ProcessRequestMethod();
     int ProcessFileName();
 
 public:
-    int requestMethod;
-    char requestFile[FILENAMESIZE];
+    int request_method;
+    char request_file[FILENAMESIZE];
+    char recived_data[BUFSIZ];
     int protocol;
-    char recivedData[BUFSIZ];
 
     int ProcessData();
 };

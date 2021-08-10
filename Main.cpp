@@ -4,24 +4,23 @@ int main()
 {
     printf("Main Function Started\n"); //main함수의 시작을 알림
 
-    std::thread sendThread[SENDTHREADSIZE]; //전송 쓰레드 선언
-
     for (int i = 0; i < READTHREADSIZE; i++)
     {
-        management[i].clientSock.thisSocket = -1;
+        management[i].clientSock.sock_descriptor = -1;
         management[i].readArray = std::thread(Input, i);
-        printf("inputThread %d opened\n", i + 1); //inputThread실행
+        printf("inputThread %d opened\n", i + 1); //입력 쓰레드 실행
     }
     for (int i = 0; i < SENDTHREADSIZE; i++)
     {
-        sendThread[i] = std::thread(SendDataFunction); //sendThread실행
+        sendThread[i] = std::thread(SendDataFunction); //전송 쓰레드 실행
+        printf("SendData Thread Opened\n\n");
     }
-    printf("SendData Thread Opened\n\n");
 
-    std::thread mainThread(MainFunction);
-    printf("mainThread Opened\n"); //accept 가 들어있는 함수 실행
+    std::thread mainThread(MainFunction); //연결 쓰레드 실행
+    printf("mainThread Opened\n");
 
-    CommandReader();
+    CommandReader(); //명령어 처리기 프로그램의 전체적인 흐름을 제어한다
+
     mainThread.join();
     for (int i = 0; i < SENDTHREADSIZE; i++)
     {
