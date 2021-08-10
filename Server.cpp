@@ -1,7 +1,6 @@
 #include "Server.h"
 
 ServerSock serverSock;
-char buffer[BUFSIZ];
 std::queue<ClientSock> clientWaitQueue;
 std::mutex socketQueueMutex;
 int arrayIndex = 0;
