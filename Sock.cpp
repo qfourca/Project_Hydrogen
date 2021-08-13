@@ -11,45 +11,45 @@ Sock::Sock()
 
 ///////////////////------------------------------------////////////////////////
 
-int ClientSock::AcceptConnection(int serverSocket)
+int ClientSock::acceptConnection(int serverSocket)
 {
     _sock_descriptor = accept(serverSocket, (struct sockaddr *)&_sock_adress, &_adressLen);
     return 0;
 }
 
-void ClientSock::AcceptSocket(int serverSocket)
+void ClientSock::acceptSocket(int serverSocket)
 {
     _sock_descriptor = accept(serverSocket, (struct sockaddr *)&_sock_adress, &_adressLen);
 }
 
-int ClientSock::SendFile(const char *fileName)
+int ClientSock::sendFile(const char *fileName)
 {
     struct stat stbuf;
-    int inFileDescriptor = open(fileName, O_RDONLY);
-    if (inFileDescriptor == -1)
+    int inputFile_descriptor = open(fileName, O_RDONLY);
+    if (inputFile_descriptor == -1)
     {
         return -1;
     }
-    fstat(inFileDescriptor, &stbuf);
-    int sendedFileSize = sendfile(_sock_descriptor, inFileDescriptor, SEEK_SET, 2147479552);
+    fstat(inputFile_descriptor, &stbuf);
+    int sendedFileSize = sendfile(_sock_descriptor, inputFile_descriptor, SEEK_SET, 2147479552);
     if (sendedFileSize == -1)
     {
         perror("Failed to send message\n");
-        close(inFileDescriptor);
+        close(inputFile_descriptor);
         return -1;
     }
     else
     {
         printf("%d bytes data sended sucessfully! filename : %s\n", sendedFileSize, fileName);
-        close(inFileDescriptor);
+        close(inputFile_descriptor);
         return sendedFileSize;
     }
 }
 
-int ClientSock::SendData(const char *dataName)
+int ClientSock::sendData(const char *dataName)
 {
-    int sendedDataSize = send(_sock_descriptor, dataName, strlen(dataName), MSG_DONTROUTE);
-    if (sendedDataSize == -1)
+    int send_data_size = send(_sock_descriptor, dataName, strlen(dataName), MSG_DONTROUTE);
+    if (send_data_size == -1)
     {
         perror("Failed to send message\n");
         return -1;
@@ -57,14 +57,14 @@ int ClientSock::SendData(const char *dataName)
     else
     {
         printf("data \" %s \" sended sucessfully!\n", dataName);
-        return sendedDataSize;
+        return send_data_size;
     }
 }
 
 ClientSock::ClientSock()
 {
-    int sockopt = 1;
-    if (setsockopt(_sock_descriptor, IPPROTO_TCP, TCP_CORK, (const char *)&sockopt, sizeof(sockopt)) == -1)
+    int sock_opction = 1;
+    if (setsockopt(_sock_descriptor, IPPROTO_TCP, TCP_CORK, (const char *)&sock_opction, sizeof(sock_opction)) == -1)
     {
         perror("ClientSocket Setting Error\n");
         exit(1);
@@ -73,24 +73,24 @@ ClientSock::ClientSock()
 
 char *ClientSock::searchString(const char *string)
 {
-    return strstr(recivedData._recived_data, string) + strlen(string);
+    return strstr(_recive_data._recived_data, string) + strlen(string);
 }
 
-int ClientSock::Interpreter()
+int ClientSock::interpreter()
 {
-    recivedData.ProcessData();
-    printf("\x1b[31m %d \n\x1b[0m", recivedData._request_method);
-    printf("%s\n", recivedData._request_file);
-    if (recivedData._request_file[0] == 0)
+    _recive_data.processData();
+    printf("\x1b[31m %d \n\x1b[0m", _recive_data._request_method);
+    printf("%s\n", _recive_data._request_file);
+    if (_recive_data._request_file[0] == 0)
     {
         printf("NULL\n");
-        strcpy(recivedData._request_file, "send/index.html");
+        strcpy(_recive_data._request_file, "send/index.html");
     }
     //keep_conection = !strncmp(searchString("Connection: "), "keep-alive", 10);
-    if (SendFile(recivedData._request_file) == -1)
+    if (sendFile(_recive_data._request_file) == -1)
     {
         printf("\x1b[31m I Can't found File\n\x1b[0m");
-        SendFile("send/index.html");
+        sendFile("send/index.html");
     }
     return DEFAULT;
 }

@@ -6,7 +6,7 @@
 extern ServerSock serverSock;
 extern ClientSock clientSock;
 extern char recieveBuffer[BUFSIZ];
-extern std::mutex socketQueueMutex;
+extern std::mutex socketQueue_mutex;
 extern int arrayIndex;
 extern bool speed;
 extern struct ThreadManagement management[READTHREADSIZE];
