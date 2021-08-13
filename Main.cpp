@@ -2,11 +2,12 @@
 
 int main()
 {
-    printf("Main Function Started\n"); //main함수의 시작을 알림
+
+    printf("Main Function Start\n"); //main함수의 시작을 알림
 
     for (int i = 0; i < READTHREADSIZE; i++)
     {
-        management[i].clientSock.sock_descriptor = -1;
+        management[i].clientSock._sock_descriptor = -1;
         management[i].readArray = std::thread(Input, i);
         printf("inputThread %d opened\n", i + 1); //입력 쓰레드 실행
     }

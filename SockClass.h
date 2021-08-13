@@ -1,5 +1,5 @@
 #include "DataClass.h"
-#include "Defines.h"
+#include "Defines/Defines.h"
 #include <algorithm>
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -22,11 +22,11 @@ class Sock //소켓 클래스 기본적인 소켓정보들이 들어 있다
 {
 protected:
     Sock();
-    sockaddr_in sock_adress;       //소켓 주소
-    static unsigned int adressLen; //주소의 길이
+    sockaddr_in _sock_adress;       //소켓 주소
+    static unsigned int _adressLen; //주소의 길이
 
 public:
-    int sock_descriptor; //소켓 디스크럽터
+    int _sock_descriptor; //소켓 디스크럽터
 };
 
 class ClientSock : public Sock
@@ -35,7 +35,6 @@ private:
     char *searchString(const char *string); //legacy
 
 public:
-    bool keep_conection;
     Data recivedData;
 
     ClientSock();

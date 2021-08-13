@@ -1,9 +1,21 @@
-#include "Defines.h"
+#include "Defines/Defines.h"
+#include "Defines/ErrorDefines.h"
 #include <algorithm>
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <vector>
+struct Error
+{
+    char _contents[ERROR_BUF];
+    int _codeName;
+};
+struct History
+{
+    long long int _method_history[CONNECTTION_REQUEST_MACOR_COUNT];
+};
+
 class Data
 {
 private:
@@ -12,10 +24,11 @@ private:
     int ProcessFileName();
 
 public:
-    int request_method;
-    char request_file[FILENAMESIZE];
-    char recived_data[BUFSIZ];
-    int protocol;
+    int _request_method;
+    char _request_file[FILENAMESIZE];
+    char _recived_data[BUFSIZ];
+
+    static std::vector<Error> errors;
 
     int ProcessData();
 };

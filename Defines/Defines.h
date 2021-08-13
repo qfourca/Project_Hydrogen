@@ -18,4 +18,5 @@
 #define PATCH 7
 #define PUT 8
 #define TRACE 9
+#define CONNECTTION_REQUEST_MACOR_COUNT 10
 //--------------------//
