@@ -1,5 +1,4 @@
 #include "SockClass.h"
-#define FOLDER 5
 
 ////////////////////////----------------------------------////////////////////
 unsigned int Sock::_adressLen = sizeof(sockaddr_in); //주소의 길이
@@ -25,24 +24,24 @@ void ClientSock::acceptSocket(int serverSocket)
 int ClientSock::sendFile(const char *fileName)
 {
     struct stat stbuf;
-    int inputFile_descriptor = open(fileName, O_RDONLY);
-    if (inputFile_descriptor == -1)
+    int file_descriptor = open(fileName, O_RDONLY);
+    if (file_descriptor == -1)
     {
         return -1;
     }
-    fstat(inputFile_descriptor, &stbuf);
-    int sendedFileSize = sendfile(_sock_descriptor, inputFile_descriptor, SEEK_SET, 2147479552);
-    if (sendedFileSize == -1)
+    fstat(file_descriptor, &stbuf);
+    int send_file_size = sendfile(_sock_descriptor, file_descriptor, SEEK_SET, 2147479552);
+    if (send_file_size == -1)
     {
         perror("Failed to send message\n");
-        close(inputFile_descriptor);
+        close(file_descriptor);
         return -1;
     }
     else
     {
-        printf("%d bytes data sended sucessfully! filename : %s\n", sendedFileSize, fileName);
-        close(inputFile_descriptor);
-        return sendedFileSize;
+        printf("%d bytes data sended sucessfully! filename : %s\n", send_file_size, fileName);
+        close(file_descriptor);
+        return send_file_size;
     }
 }
 
@@ -73,24 +72,21 @@ ClientSock::ClientSock()
 
 char *ClientSock::searchString(const char *string)
 {
-    return strstr(_recive_data._recived_data, string) + strlen(string);
+    return strstr(_data._recived_data, string) + strlen(string);
 }
 
 int ClientSock::interpreter()
 {
-    _recive_data.processData();
-    printf("\x1b[31m %d \n\x1b[0m", _recive_data._request_method);
-    printf("%s\n", _recive_data._request_file);
-    if (_recive_data._request_file[0] == 0)
+    _data.process();
+    printf("%s\n", _data._request_file);
+    if (_data._request_file[FOLDERLONG + 1] == 0)
     {
-        printf("NULL\n");
-        strcpy(_recive_data._request_file, "send/index.html");
+        strcpy(_data._request_file, "send/index.html");
     }
-    //keep_conection = !strncmp(searchString("Connection: "), "keep-alive", 10);
-    if (sendFile(_recive_data._request_file) == -1)
+    if (sendFile(_data._request_file) == -1)
     {
         printf("\x1b[31m I Can't found File\n\x1b[0m");
-        sendFile("send/index.html");
+        sendData("404 Not Found");
     }
     return DEFAULT;
 }

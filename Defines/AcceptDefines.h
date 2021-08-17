@@ -1,0 +1,42 @@
+#define BITSHIFT 8
+
+//types
+#define APPLICATION 1 << BITSHIFT
+#define AUDIO 2 << BITSHIFT
+#define EXAMPLE 3 << BITSHIFT
+#define FONT 4 << BITSHIFT
+#define IMAGE 5 << BITSHIFT
+#define MODEL 6 << BITSHIFT
+#define TEXT 7 << BITSHIFT
+#define VIDEO 8 << BITSHIFT
+#define MESSAGE 9 << BITSHIFT
+#define MULTIPART 10 << BITSHIFT
+
+#define OGG 955
+
+//type/subtype
+#define TEXT_CSS TEXT + 1
+#define TEXT_HTML TEXT + 2
+#define TEXT_JAVASCRIPT TEXT + 3
+
+#define IMAGE_APNG IMAGE + 1
+#define IMAGE_BMP IMAGE + 2
+#define IMAGE_GIF IMAGE + 3
+#define IMAGE_ICO IMAGE + 4
+#define IMAGE_JPEG IMAGE + 5
+#define IMAGE_PNG IMAGE + 6
+#define IMAGE_SVG IMAGE + 7
+#define IMAGE_TIFF IMAGE + 8
+#define IMAGE_WEBP IMAGE + 9
+
+#define AUDIO_WAVE AUDIO + 1
+#define AUDIO_WAV AUDIO + 2
+#define AUDIO_XWAV AUDIO + 3
+#define AUDIO_XPNWAV AUDIO + 4
+#define AUDIO_WEBM AUDIO + 5
+#define AUDIO_OGG AUDIO + OGG
+
+#define VIDEO_WEBM VIDEO + 1
+#define VIDEO_OGG VIDEO + OGG
+
+#define APPLICATION_OGG APPLICATION + OGG

@@ -48,29 +48,23 @@ int Data::processFileName()
     {
     }              // /를 건너뛰기
     working_idx++; //그 다음 인덱스
-    if (_recived_data[working_idx] == ' ')
+
+    strcpy(_request_file, SENDFOLDER); //앞에 폴더의 경로 붙이기
+    int i;
+    for (i = FOLDERLONG; _recived_data[working_idx] != ' '; working_idx++)
     {
-        _request_file[0] = 0;
-        return -1;
-    } //아무것도 요청한 파일이 없을 시
-    else
-    {
-        strcpy(_request_file, SENDFOLDER); //앞에 폴더의 경로 붙이기
-        int i;
-        for (i = strlen(SENDFOLDER); _recived_data[working_idx] != ' '; working_idx++)
-        {
-            _request_file[i] = _recived_data[working_idx];
-            i++;
-        }
-        return i - strlen(SENDFOLDER); //파일 이름의 길이 반환
+        _request_file[i] = _recived_data[working_idx];
+        i++;
     }
-}
-void Error::inputTimes()
-{
-    time_t curTime = time(NULL);
-    struct tm *thistime = localtime(&curTime);
-    hour = thistime->tm_hour;
-    min = thistime->tm_min;
+    for (int j = FOLDERLONG + 1; j < i; j++)
+    {
+        if (_request_file[j] == '.')
+        {
+            _isFilename_folder = false;
+            break;
+        }
+    }
+    return i - FOLDERLONG; //파일 이름의 길이 반환
 }
 
 int Data::processData()
@@ -78,4 +72,23 @@ int Data::processData()
     _request_method = processRequestMethod();
     processFileName();
     return 0;
+}
+
+int Data::processHeader()
+{
+    return DEFAULT;
+}
+int Data::process()
+{
+    processData();
+    processHeader();
+    return DEFAULT;
+}
+
+void Error::inputTimes()
+{
+    time_t curTime = time(NULL);
+    struct tm *thistime = localtime(&curTime);
+    hour = thistime->tm_hour;
+    min = thistime->tm_min;
 }

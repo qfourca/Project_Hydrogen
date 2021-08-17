@@ -35,7 +35,7 @@ private:
     char *searchString(const char *string); //legacy
 
 public:
-    Data _recive_data;
+    Data _data;
 
     ClientSock();
 

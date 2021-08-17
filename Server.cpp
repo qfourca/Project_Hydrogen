@@ -41,7 +41,7 @@ extern int CommandReader()
         }
         else if (!strcmp(command, "info"))
         {
-            std::cout << clientSock._recive_data.errors.size() << std::endl;
+            std::cout << clientSock._data.errors.size() << std::endl;
         }
         else
         {
@@ -62,7 +62,7 @@ extern void SendDataFunction()
             clientWaitQueue.pop();
             socketQueue_mutex.unlock();
             printf("----------------------------------------------------\n");
-            printf("%s", myClient._recive_data._recived_data);
+            printf("%s", myClient._data._recived_data);
             printf("----------------------------------------------------\n");
             //myClient.sendFile("send/header.txt");
             //std::cout << tempClient.interpreter() << std::endl;
@@ -82,14 +82,14 @@ extern void Input(int myAccessPoint)
         {
             //management[myAccessPoint].readThreadMutex.lock();
             if (read(management[myAccessPoint].clientSock._sock_descriptor,
-                     management[myAccessPoint].clientSock._recive_data._recived_data, BUFSIZ) > 0)
+                     management[myAccessPoint].clientSock._data._recived_data, BUFSIZ) > 0)
             {
                 socketQueue_mutex.lock();
                 clientWaitQueue.push(management[myAccessPoint].clientSock);
                 socketQueue_mutex.unlock();
                 for (int i = 0; i < BUFSIZ; i++)
                 {
-                    management[myAccessPoint].clientSock._recive_data._recived_data[i] = 0;
+                    management[myAccessPoint].clientSock._data._recived_data[i] = 0;
                 };
             }
             management[myAccessPoint].clientSock._sock_descriptor = -1;

@@ -27,13 +27,18 @@ private:
     int processRequestMethod(); //연결 요청 메소드를 분석해 정수형으로 반환해주는 함수
     int processFileName();      //파일 이름을 분석해 _request_file에 넣어주는 함수 반환값:파일 이름의 길이
     void inputTimes();
+    int processData();
+    int processHeader();
+
+    int _request_method;
 
 public:
-    int _request_method;
-    char _request_file[FILENAMESIZE];
     char _recived_data[BUFSIZ];
+    char _send_hearder[BUFSIZ];
+    char _request_file[FILENAMESIZE];
+    bool _isFilename_folder = true;
+
+    int process();
 
     static std::vector<Error> errors;
-
-    int processData();
 };
