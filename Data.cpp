@@ -1,94 +1,53 @@
 #include "DataClass.h"
-std::vector<Error> Data::errors;
 
-int Data::processRequestMethod()
+int Data::requestMethod()
 {
     char method[20];
-    for (working_idx = 0; _recived_data[working_idx] != '/' && _recived_data[working_idx] != ' '; working_idx++)
+    if (strlen(method) == 3)
     {
+        if (method[0] == 'G')
+            return GET;
+        else if (method[0] == 'P')
+            return PUT;
     }
-    if (!strncmp(method, "GET", working_idx))
-        return GET;
-    else if (!strncmp(method, "CONNECT", working_idx))
-        return CONNECT;
-    else if (!strncmp(method, "DELETE", working_idx))
-        return DELETE;
-    else if (!strncmp(method, "POST", working_idx))
-        return POST;
-    else if (!strncmp(method, "HEAD", working_idx))
-        return HEAD;
-    else if (!strncmp(method, "OPCTIONS", working_idx))
+    else if (strlen(method) == 4)
+    {
+        if (method[0] == 'P')
+            return POST;
+        else if (method[0] == 'H')
+            return HEAD;
+    }
+    else if (strlen(method) == 5)
+    {
+        if (method[0] == 'P')
+            return PATCH;
+        else if (method[0] == 'T')
+            return TRACE;
+    }
+    else if (strlen(method) == 6)
+    {
+        if (method[0] == 'C')
+            return CONNECT;
+        else if (method[0] == 'D')
+            return DELETE;
+    }
+    else if (strlen(method) == 7 && method[0] == 'O')
         return OPCTIONS;
-    else if (!strncmp(method, "PATCH", working_idx))
-        return PATCH;
-    else if (!strncmp(method, "PUT", working_idx))
-        return PUT;
-    else if (!strncmp(method, "TRACE", working_idx))
-        return TRACE;
-    else //알 수 없는 데이터 일시
+    return UNKNOWN;
+}
+char *Data::fileName()
+{
+    strcpy(filename, SENDFOLDER); //앞에 폴더의 경로 붙이기
+    char *ptrFilename = filename;
+    char *ptrRecieve = _recived_data;
+    ptrFilename += FOLDERLONG;
+    while (*ptrRecieve != '/')
+        ptrRecieve++;
+    ptrRecieve++;
+    for (; *ptrRecieve != ' '; ptrRecieve++)
     {
-        Error error;
-        error._codeName = UNKNOWM_METHOD;
-        int error_long = strlen(method);
-        if (error_long > ERROR_BUF)
-        {
-            for (int i = ERROR_BUF - 1; i > ERROR_BUF - 4; i--)
-                error._contents[i] = '.';
-            error_long = ERROR_BUF - 3;
-        } //에러가 너무 긴 경우
-        strncpy(error._contents, method, error_long);
-        error.inputTimes();
-        errors.push_back(error);
-        return UNKNOWN;
+        *ptrFilename = *ptrRecieve;
+        ptrFilename++;
     }
-}
-int Data::processFileName()
-{
-    for (; _recived_data[working_idx] != '/'; working_idx++)
-    {
-    }              // /를 건너뛰기
-    working_idx++; //그 다음 인덱스
-
-    strcpy(_request_file, SENDFOLDER); //앞에 폴더의 경로 붙이기
-    int i;
-    for (i = FOLDERLONG; _recived_data[working_idx] != ' '; working_idx++)
-    {
-        _request_file[i] = _recived_data[working_idx];
-        i++;
-    }
-    for (int j = FOLDERLONG + 1; j < i; j++)
-    {
-        if (_request_file[j] == '.')
-        {
-            _isFilename_folder = false;
-            break;
-        }
-    }
-    return i - FOLDERLONG; //파일 이름의 길이 반환
-}
-
-int Data::processData()
-{
-    _request_method = processRequestMethod();
-    processFileName();
-    return 0;
-}
-
-int Data::processHeader()
-{
-    return DEFAULT;
-}
-int Data::process()
-{
-    processData();
-    processHeader();
-    return DEFAULT;
-}
-
-void Error::inputTimes()
-{
-    time_t curTime = time(NULL);
-    struct tm *thistime = localtime(&curTime);
-    hour = thistime->tm_hour;
-    min = thistime->tm_min;
+    return filename;
 }

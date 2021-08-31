@@ -41,7 +41,6 @@ extern int CommandReader()
         }
         else if (!strcmp(command, "info"))
         {
-            std::cout << clientSock._data.errors.size() << std::endl;
         }
         else
         {

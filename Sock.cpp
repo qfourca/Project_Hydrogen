@@ -77,16 +77,17 @@ char *ClientSock::searchString(const char *string)
 
 int ClientSock::interpreter()
 {
-    _data.process();
-    printf("%s\n", _data._request_file);
-    if (_data._request_file[FOLDERLONG + 1] == 0)
+    printf("%s\n", _data.fileName());
+    if (!strcmp(_data.fileName(), SENDFOLDER))
+        sendFile("send/index.html");
+    else
     {
-        strcpy(_data._request_file, "send/index.html");
-    }
-    if (sendFile(_data._request_file) == -1)
-    {
-        printf("\x1b[31m I Can't found File\n\x1b[0m");
-        sendData("404 Not Found");
+        int temp = sendFile(_data.fileName());
+        if (temp == -1)
+        {
+            perror("ERROR!");
+            sendData("404");
+        }
     }
     return DEFAULT;
 }
