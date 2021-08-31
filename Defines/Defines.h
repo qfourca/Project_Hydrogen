@@ -6,7 +6,6 @@
 #define SLEEPTIME 1           //딜레이 시간
 #define READTHREADSIZE 4      //입력 쓰레드 개수
 #define SENDTHREADSIZE 1      //전송 쓰레드 개수
-#define MAINHTML "index.html"
 #define FOLDERLONG strlen(SENDFOLDER)
 
 //연결 요청 메소드 매크로

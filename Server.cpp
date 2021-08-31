@@ -15,7 +15,6 @@ extern void MainFunction()
     {
         for (; management[arrayIndex].clientSock._sock_descriptor != -1;)
         {
-            //speed = true;
             usleep(SLEEPTIME);
         }
         clientSock.acceptConnection(serverSock._sock_descriptor);
@@ -63,9 +62,7 @@ extern void SendDataFunction()
             printf("----------------------------------------------------\n");
             printf("%s", myClient._data._recived_data);
             printf("----------------------------------------------------\n");
-            //myClient.sendFile("send/header.txt");
-            //std::cout << tempClient.interpreter() << std::endl;
-            myClient.interpreter(); //데이터를 처리하고 그에 맞는 데이터를 전송하는 함수
+            myClient.interpreter();
             close(myClient._sock_descriptor);
         }
         else
@@ -79,7 +76,6 @@ extern void Input(int myAccessPoint)
     {
         if (management[myAccessPoint].clientSock._sock_descriptor != -1)
         {
-            //management[myAccessPoint].readThreadMutex.lock();
             if (read(management[myAccessPoint].clientSock._sock_descriptor,
                      management[myAccessPoint].clientSock._data._recived_data, BUFSIZ) > 0)
             {
@@ -92,7 +88,6 @@ extern void Input(int myAccessPoint)
                 };
             }
             management[myAccessPoint].clientSock._sock_descriptor = -1;
-            //management[myAccessPoint].readThreadMutex.unlock();
         }
         else
             usleep(SLEEPTIME);

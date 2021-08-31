@@ -31,18 +31,10 @@ int ClientSock::sendFile(const char *fileName)
     }
     fstat(file_descriptor, &stbuf);
     int send_file_size = sendfile(_sock_descriptor, file_descriptor, SEEK_SET, 2147479552);
-    if (send_file_size == -1)
-    {
-        perror("Failed to send message\n");
-        close(file_descriptor);
-        return -1;
-    }
-    else
-    {
+    if (send_file_size != -1)
         printf("%d bytes data sended sucessfully! filename : %s\n", send_file_size, fileName);
-        close(file_descriptor);
-        return send_file_size;
-    }
+    close(file_descriptor);
+    return send_file_size;
 }
 
 int ClientSock::sendData(const char *dataName)
