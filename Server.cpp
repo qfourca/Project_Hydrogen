@@ -3,14 +3,13 @@
 ServerSock serverSock;
 std::queue<ClientSock> clientWaitQueue;
 std::mutex socketQueue_mutex;
-int arrayIndex = 0;
 struct ThreadManagement management[READTHREADSIZE];
 std::thread sendThread[SENDTHREADSIZE]; //전송 쓰레드 선언
-bool speed = false;
 
 extern void MainFunction()
 {
     ClientSock clientSock;
+    int arrayIndex = 0;
     for (;;)
     {
         for (; management[arrayIndex].clientSock._sock_descriptor != -1;)

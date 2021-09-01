@@ -2,7 +2,7 @@
 
 int Data::requestMethod()
 {
-    char method[20];
+    char method[32];
     if (strlen(method) == 3)
     {
         if (method[0] == 'G')
