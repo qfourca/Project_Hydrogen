@@ -51,3 +51,13 @@ char *Data::fileName()
     }
     return filename;
 }
+int Data::host()
+{
+    char *start = strstr(_recived_data, HOST);
+    start += strlen(HOST);
+    start++;
+    if (!strcmp(start, "localhost"))
+        return LOCALHOST;
+    else
+        return ERROR;
+}

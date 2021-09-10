@@ -81,6 +81,7 @@ int ClientSock::interpreter()
             sendData("404");
         }
     }
+    printf("\n%d", _data.host());
     return DEFAULT;
 }
 
@@ -113,6 +114,6 @@ ServerSock::ServerSock()
     {
         printf("Listen Successed\n");
     }
-    printf("Server Open! %s:%u\n\n", MYIP, ntohs(_sock_adress.sin_port));
+    printf("Server Open! %s:%u\n\n", "localhost", ntohs(_sock_adress.sin_port));
 }
 /////////////////////////////////////////////////
