@@ -35,6 +35,66 @@ int Data::requestMethod()
         return OPCTIONS;
     return UNKNOWN;
 }
+
+int Data::urlDecoder(char *input, char *output)
+{
+    int num = 0, i, hexv, index = 0;
+    int retval = 0;
+    while (*input)
+    {
+        if (*input == '%')
+        {
+            num = 0;
+            retval = 0;
+
+            for (i = 0; i < 2; i++)
+            {
+                *input++;
+                if (*(input) < ':')
+                {
+                    num = *(input)-48;
+                }
+                else if (*(input) > '@' && *(input) < '[')
+                {
+                    num = (*(input) - 'A') + 10;
+                }
+                else
+                {
+                    num = (*(input) - 'a') + 10;
+                }
+
+                if ((16 * (1 - i)))
+                    num = (num * 16);
+                retval += num;
+            }
+            output[index] = retval;
+            index++;
+        }
+        else if (*input == '+')
+        {
+            output[index] = ' ';
+            index++;
+        }
+        else
+        {
+            output[index] = *input;
+            index++;
+        }
+        *input++;
+    }
+    return index;
+}
+int Data::urlDecoder(char *arg)
+{
+    char *output;
+    int ret = urlDecoder(arg, output);
+    arg = output;
+    return ret;
+}
+int Data::urlDecoder()
+{
+    return urlDecoder(_recived_data);
+}
 char *Data::fileName()
 {
     strcpy(filename, SENDFOLDER); //앞에 폴더의 경로 붙이기

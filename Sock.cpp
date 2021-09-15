@@ -69,19 +69,26 @@ char *ClientSock::searchString(const char *string)
 
 int ClientSock::interpreter()
 {
-    printf("%s\n", _data.fileName());
-    if (!strcmp(_data.fileName(), SENDFOLDER))
-        sendFile("send/index.html");
-    else
+    //printf("%s\n", _data.fileName());
+    if (1)
     {
-        int temp = sendFile(_data.fileName());
-        if (temp == -1)
+        if (!strcmp(_data.fileName(), SENDFOLDER))
+            sendFile("send/index.html");
+        else
         {
-            perror("ERROR!");
-            sendData("404");
+            int temp = sendFile(_data.fileName());
+            if (temp == -1)
+            {
+                perror("ERROR!");
+                sendData("404");
+            }
         }
     }
-    printf("\n%d", _data.host());
+    else if (_data.requestMethod() == POST)
+    {
+        _data.urlDecoder();
+        printf("%s", _data._recived_data);
+    }
     return DEFAULT;
 }
 
