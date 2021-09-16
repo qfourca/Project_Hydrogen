@@ -59,7 +59,7 @@ extern void SendDataFunction()
             clientWaitQueue.pop();
             socketQueue_mutex.unlock();
             printf("----------------------------------------------------\n");
-            printf("%s", myClient._data._recived_data);
+            //printf("%s", myClient._data._recived_data);
             printf("----------------------------------------------------\n");
             myClient.interpreter();
             close(myClient._sock_descriptor);

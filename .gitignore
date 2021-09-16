@@ -33,4 +33,4 @@
 
 *.txt
 
-send/
+#send/
