@@ -9,6 +9,7 @@
 #define ERROR -1
 
 //연결 요청 메소드 매크로
+
 #define UNKNOWN 0
 #define GET 1
 #define CONNECT 2
@@ -21,4 +22,5 @@
 #define TRACE 9
 #define CONNECTTION_REQUEST_MACOR_COUNT 10
 //--------------------//
+
 #define LOCALHOST 1
