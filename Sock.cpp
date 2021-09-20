@@ -12,32 +12,26 @@ extern int retTime(int arg)
         return t->tm_min;
     case HOUR:
         return t->tm_hour;
+    case DAY:
+        return t->tm_mday;
     default:
         return ERROR;
     }
 }
 
-int ClientSock::interpreter()
+int ClientSock::sendDataAuto()
 {
-    //printf("%s\n", _data.fileName());
-    if (1)
+
+    if (!strcmp(_data.fileName(), SENDFOLDER)) //아무것도 없을 때
+        sendFile("send/index.html");           //index.html 전송
+    else
     {
-        if (!strcmp(_data.fileName(), SENDFOLDER))
-            sendFile("send/index.html");
-        else
+        int temp = sendFile(_data.fileName());
+        if (temp == -1) //파일 전송에 에러가 났을 때
         {
-            int temp = sendFile(_data.fileName());
-            if (temp == -1)
-            {
-                perror("ERROR!");
-                sendData("404");
-            }
+            perror("ERROR!");
+            sendString("404 not found"); //404전송
         }
-    }
-    else if (_data.requestMethod() == POST)
-    {
-        _data.urlDecoder();
-        printf("%s", _data._recived_data);
     }
     return DEFAULT;
 }
@@ -49,15 +43,12 @@ Sock::Sock()
     memset(&_sock_adress, 0, sizeof(_sock_adress));
     _sock_descriptor = socket(PF_INET, SOCK_STREAM, 0);
 }
-
 ///////////////////------------------------------------////////////////////////
-
 int ClientSock::acceptConnection(int serverSocket)
 {
     _sock_descriptor = accept(serverSocket, (struct sockaddr *)&_sock_adress, &_adressLen);
     return 0;
 }
-
 void ClientSock::acceptSocket(int serverSocket)
 {
     _sock_descriptor = accept(serverSocket, (struct sockaddr *)&_sock_adress, &_adressLen);
@@ -66,23 +57,21 @@ void ClientSock::acceptSocket(int serverSocket)
 int ClientSock::sendFile(const char *fileName)
 {
     struct stat stbuf;
-    int file_descriptor = open(fileName, O_RDONLY);
-    if (file_descriptor == -1)
-    {
-        return -1;
-    }
+    int file_descriptor = open(fileName, O_RDONLY); //전송할 파일을 읽기 전용으로 열기
+    if (file_descriptor == -1)                      //만약 -1(에러) 가 났다면
+        return ERROR;                               //에러 반환
+
     fstat(file_descriptor, &stbuf);
     int send_file_size = sendfile(_sock_descriptor, file_descriptor, SEEK_SET, 2147479552);
     if (send_file_size != -1)
     {
-        printf("%d:%d:%d |", retTime(HOUR), retTime(MIN), retTime(SEC));
+        printf("%d:%d:%d:%d | ", retTime(DAY), retTime(HOUR), retTime(MIN), retTime(SEC));
         printf("%d bytes data sended sucessfully! filename : %s\n", send_file_size, fileName);
     }
     close(file_descriptor);
     return send_file_size;
 }
-
-int ClientSock::sendData(const char *dataName)
+int ClientSock::sendString(const char *dataName)
 {
     int send_data_size = send(_sock_descriptor, dataName, strlen(dataName), MSG_DONTROUTE);
     if (send_data_size == -1)

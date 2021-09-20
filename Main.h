@@ -1,8 +1,10 @@
 #include "SockClass.h"
 #include <algorithm>
+#include <ctime>
 #include <queue>
 #include <vector>
-#include <ctime>
+
+#define LOGFOLDER "logs/"
 
 struct ThreadManagement
 {
@@ -11,11 +13,11 @@ struct ThreadManagement
     std::mutex readThreadMutex;
 };
 
+int delayTime = 1; //딜레이 시간
 ServerSock serverSock;
 char recieveBuffer[BUFSIZ];
 std::mutex socketQueue_mutex;
 int arrayIndex;
-bool speed;
 struct ThreadManagement management[READTHREADSIZE];
 std::thread sendThread[SENDTHREADSIZE]; //전송 쓰레드 선언
 std::queue<ClientSock> clientWaitQueue;
@@ -24,3 +26,5 @@ void MainFunction();
 void SendDataFunction();
 void Input(int myAccessPoint);
 int CommandReader();
+
+void printl(const char *);

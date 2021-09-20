@@ -1,4 +1,4 @@
-#include "main.h"
+#include "Main.h"
 
 int main()
 {
@@ -10,6 +10,7 @@ int main()
         management[i].readArray = std::thread(Input, i);
         printf("inputThread %d opened\n", i + 1); //입력 쓰레드 실행
     }
+    std::cout << std::endl;
     for (int i = 0; i < SENDTHREADSIZE; i++)
     {
         sendThread[i] = std::thread(SendDataFunction); //전송 쓰레드 실행
@@ -19,11 +20,7 @@ int main()
     std::thread mainThread(MainFunction); //연결 쓰레드 실행
     printf("mainThread Opened\n");
 
-    int command_reader = CommandReader(); //명령어 처리기 프로그램의 전체적인 흐름을 제어한다
-    if (!CommandReader())
-        printf("begin to stop server");
-    else
-        printf("Something Error Occur when close server Error Code : %d", command_reader);
+    CommandReader(); //명령어 처리기 프로그램의 전체적인 흐름을 제어한다
 
     mainThread.join();
     for (int i = 0; i < SENDTHREADSIZE; i++)
@@ -44,16 +41,15 @@ extern void MainFunction()
     int arrayIndex = 0;
     for (;;)
     {
-        for (; management[arrayIndex].clientSock._sock_descriptor != -1;)
-        {
-            usleep(delayTime);
-        }
-        clientSock.acceptConnection(serverSock._sock_descriptor);
-        if (arrayIndex >= READTHREADSIZE - 1)
-            arrayIndex = 0;
-        else
-            arrayIndex++;
+        for (; management[arrayIndex].clientSock._sock_descriptor != -1;) //입력 배열이 비지 않았을 경우
+            usleep(delayTime);                                            //delayTime 만큼 휴식
+        clientSock.acceptConnection(serverSock._sock_descriptor);         //연결 받기
+        if (arrayIndex >= READTHREADSIZE - 1)                             //다음으로 입력받을 쓰레드가 없을경우
+            arrayIndex = 0;                                               //0으로 돌아가기
+        else                                                              //있을 경우
+            arrayIndex++;                                                 //다음 쓰레드로 넘어가기
         management[arrayIndex].clientSock._sock_descriptor = clientSock._sock_descriptor;
+        //지금의 소켓 디스크럽터를 넣어 주기
     }
 }
 
@@ -66,22 +62,26 @@ extern int CommandReader()
         std::cin >> command;
         if (!strcmp(command, "end"))
         {
-            close(serverSock._sock_descriptor);
-            return 0;
+            close(serverSock._sock_descriptor); //소켓 닫기
+            exit(0);
         }
         else if (!strcmp(command, "speed"))
-        {
-        }
+            std::cout << "delay time is " << delayTime << std::endl;
         else if (!strcmp(command, "speeddef"))
         {
+            std::cout << "input delay time : ";
+            unsigned int temp_delay_time;
+            std::cin >> temp_delay_time;
+            if (temp_delay_time == 0)
+                std::cout << "Error\n";
+            else
+                delayTime = temp_delay_time;
         }
         else if (!strcmp(command, "info"))
-        {
-        }
+            for (int i = 0; i < READTHREADSIZE; i++)
+                std::cout << management[i].clientSock._sock_descriptor << std::endl;
         else
-        {
-            printf("Unknown Command\n");
-        }
+            std::cout << "Unknown Command\n"; //알지 못하는 명령어가 들어왔을 때
     }
 }
 
@@ -96,11 +96,10 @@ extern void SendDataFunction()
             socketQueue_mutex.lock();
             clientWaitQueue.pop();
             socketQueue_mutex.unlock();
-
             printf("----------------------------------------------------\n");
             printf("%s", myClient._data._recived_data);
             printf("----------------------------------------------------\n");
-            myClient.interpreter();
+            myClient.sendDataAuto();
             close(myClient._sock_descriptor);
         }
         else
@@ -130,4 +129,14 @@ extern void Input(int myAccessPoint)
         else
             usleep(delayTime);
     }
+}
+
+void printl(const char *input)
+{
+    char logFolder[32] = LOGFOLDER;
+    int logFileD = open(strcat(logFolder, "log.txt"), O_WRONLY | O_CREAT);
+    if (logFileD >= -1 && logFileD <= 2)
+        std::cout << "ERROR error code : " << logFileD << std::endl;
+    write(logFileD, input, strlen(input));
+    close(logFileD);
 }

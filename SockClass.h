@@ -18,6 +18,7 @@
 #include <thread>
 #include <unistd.h>
 
+//시간 관련 def
 #define SEC 1
 #define MIN 2
 #define HOUR 3
@@ -46,13 +47,13 @@ public:
 
     ClientSock();
 
-    int acceptConnection(int);  //서버 연결 매개변수1:서버의 소켓 반환값:0
-    void acceptSocket(int);     //소켓 연결 매개변수1:서버의 소켓
-    int sendFile(const char *); //파일 전송 매개변수1:파일의 이름
-                                //         반환값:전송이 성공적으로 이루어 졌을 경우 보낸 파일의 크기(단위:byte) 실패시 -1
-    int sendData(const char *); //문자열 전송 매개변수1:보낼 문자열
-                                //           반환값:전송이 성공적으로 이루어 졌을 경우 보낸 문자열의 크기(단위:byte) 실패시 -1
-    int interpreter();
+    int acceptConnection(int);    //서버 연결 매개변수1:서버의 소켓 반환값:0
+    void acceptSocket(int);       //소켓 연결 매개변수1:서버의 소켓
+    int sendFile(const char *);   //파일 전송 매개변수1:파일의 이름
+                                  //         반환값:전송이 성공적으로 이루어 졌을 경우 보낸 파일의 크기(단위:byte) 실패시 -1
+    int sendString(const char *); //문자열 전송 매개변수1:보낼 문자열
+                                  //           반환값:전송이 성공적으로 이루어 졌을 경우 보낸 문자열의 크기(단위:byte) 실패시 -1
+    int sendDataAuto();
 };
 
 class ServerSock : public Sock //서버 클래스
