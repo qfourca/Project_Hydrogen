@@ -18,6 +18,13 @@
 #include <thread>
 #include <unistd.h>
 
+#define SEC 1
+#define MIN 2
+#define HOUR 3
+#define DAY 4
+
+int retTime(int);
+
 class Sock //소켓 클래스 기본적인 소켓정보들이 들어 있다
 {
 protected:

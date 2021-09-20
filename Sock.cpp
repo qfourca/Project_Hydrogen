@@ -1,5 +1,47 @@
 #include "SockClass.h"
 
+extern int retTime(int arg)
+{
+    time_t timer = time(NULL);
+    struct tm *t = localtime(&timer);
+    switch (arg)
+    {
+    case SEC:
+        return t->tm_sec;
+    case MIN:
+        return t->tm_min;
+    case HOUR:
+        return t->tm_hour;
+    default:
+        return ERROR;
+    }
+}
+
+int ClientSock::interpreter()
+{
+    //printf("%s\n", _data.fileName());
+    if (1)
+    {
+        if (!strcmp(_data.fileName(), SENDFOLDER))
+            sendFile("send/index.html");
+        else
+        {
+            int temp = sendFile(_data.fileName());
+            if (temp == -1)
+            {
+                perror("ERROR!");
+                sendData("404");
+            }
+        }
+    }
+    else if (_data.requestMethod() == POST)
+    {
+        _data.urlDecoder();
+        printf("%s", _data._recived_data);
+    }
+    return DEFAULT;
+}
+
 ////////////////////////----------------------------------////////////////////
 unsigned int Sock::_adressLen = sizeof(sockaddr_in); //주소의 길이
 Sock::Sock()
@@ -32,7 +74,10 @@ int ClientSock::sendFile(const char *fileName)
     fstat(file_descriptor, &stbuf);
     int send_file_size = sendfile(_sock_descriptor, file_descriptor, SEEK_SET, 2147479552);
     if (send_file_size != -1)
+    {
+        printf("%d:%d:%d |", retTime(HOUR), retTime(MIN), retTime(SEC));
         printf("%d bytes data sended sucessfully! filename : %s\n", send_file_size, fileName);
+    }
     close(file_descriptor);
     return send_file_size;
 }
@@ -65,31 +110,6 @@ ClientSock::ClientSock()
 char *ClientSock::searchString(const char *string)
 {
     return strstr(_data._recived_data, string) + strlen(string);
-}
-
-int ClientSock::interpreter()
-{
-    //printf("%s\n", _data.fileName());
-    if (1)
-    {
-        if (!strcmp(_data.fileName(), SENDFOLDER))
-            sendFile("send/index.html");
-        else
-        {
-            int temp = sendFile(_data.fileName());
-            if (temp == -1)
-            {
-                perror("ERROR!");
-                sendData("404");
-            }
-        }
-    }
-    else if (_data.requestMethod() == POST)
-    {
-        _data.urlDecoder();
-        printf("%s", _data._recived_data);
-    }
-    return DEFAULT;
 }
 
 ////////////////////-------------------------//////////////////////////

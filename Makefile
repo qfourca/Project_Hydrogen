@@ -5,9 +5,8 @@ main = Main
 
 all :
 	g++ -c Sock.cpp SockClass.h
-	g++ -c Server.cpp Server.h
 	g++ -c Data.cpp DataClass.h
-	g++ -o Server Main.cpp Sock.o Server.o Data.o -pthread
+	g++ -o Server Main.cpp Sock.o Data.o -pthread
 	rm -rf *.o
 	rm -rf *.gch
 
