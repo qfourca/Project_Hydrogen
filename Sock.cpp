@@ -67,8 +67,7 @@ int ClientSock::sendFile(const char *fileName)
     {
         char printlog[BUFSIZ];
         int len = sprintf(printlog, "%d bytes data sended sucessfully! filename : %s\n", send_file_size, fileName);
-        printf("%d:%d:%d:%d | ", retTime(DAY), retTime(HOUR), retTime(MIN), retTime(SEC));
-        printl(printlog, true);
+        printl(printlog, PRINTOUT);
     }
     close(file_descriptor);
     return send_file_size;
@@ -135,37 +134,31 @@ ServerSock::ServerSock()
     printf("Server Open! %s:%u\n\n", "localhost", ntohs(_sock_adress.sin_port));
 }
 /////////////////////////////////////////////////
-void printl(const char *input)
+void printl(const char *input, char flag)
 {
-    char logFolder[32] = LOGFOLDER;
+    char logFolder[16] = LOGFOLDER;
     int logFileD = open(strcat(logFolder, "log.txt"), O_WRONLY | O_CREAT | O_APPEND);
     char printlog[BUFSIZ];
+    char temp[128];
     int len = strlen(input);
-    if (len > 70)
-    {
-        len = sprintf(printlog, "%d:%d:%d:%d \n %s ",
-                      retTime(DAY), retTime(HOUR), retTime(MIN), retTime(SEC), input);
-    }
+    if (flag & DONTTIME)
+        strcpy(printlog, input);
     else
     {
-        len = sprintf(printlog, "%d:%d:%d:%d | %s ",
-                      retTime(DAY), retTime(HOUR), retTime(MIN), retTime(SEC), input);
+        strncpy(temp, len > 70 ? "%d:%d:%d:%d \n %s" : "%d:%d:%d:%d | %s", 32);
+        len = sprintf(printlog, temp, retTime(DAY), retTime(HOUR), retTime(MIN), retTime(SEC), input);
     }
+
     if (logFileD >= -1 && logFileD <= 2)
         std::cout
             << "[ERROR] error code : " << logFileD << std::endl;
     else
     {
-        write(logFileD, input, len);
+        if (flag & PRINTOUT)
+            write(1, printlog, len);
+        if (flag & PRINTERR)
+            write(2, printlog, len);
+        write(logFileD, printlog, len);
         close(logFileD);
     }
-}
-
-void printl(const char *input, bool isStdOut)
-{
-    printl(input);
-    if (isStdOut)
-        printf("%s", input);
-    else
-        perror(input);
 }

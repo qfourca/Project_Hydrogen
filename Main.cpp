@@ -2,7 +2,7 @@
 
 int main()
 {
-    printl("Main Function Start\n", true); //main함수의 시작을 알림
+    printl("Main Function Start\n", PRINTOUT); //main함수의 시작을 알림
 
     for (int i = 0; i < READTHREADSIZE; i++)
     {
@@ -93,9 +93,9 @@ extern void SendDataFunction()
             socketQueue_mutex.lock();
             clientWaitQueue.pop();
             socketQueue_mutex.unlock();
-            printl("----------------------------------------------------\n");
-            printl(myClient._data._recived_data);
-            printl("----------------------------------------------------\n");
+            printl("----------------------------------------------------\n", DONTTIME);
+            printl(myClient._data._recived_data, false);
+            printl("----------------------------------------------------\n", DONTTIME);
             myClient.sendDataAuto();
             close(myClient._sock_descriptor);
         }

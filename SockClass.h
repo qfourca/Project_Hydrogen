@@ -26,8 +26,13 @@
 #define DAY 4
 
 int retTime(int);
-void printl(const char *);
-void printl(const char *, bool);
+
+//printl 플래그
+#define PRINTOUT 1 << 0 //표준 출력에도 로그를 남길지
+#define PRINTERR 1 << 1 //표준 에러에도 로그를 남길지
+#define DONTTIME 1 << 2 //시간을 출력하지 말지
+
+void printl(const char *, char);
 
 class Sock //소켓 클래스 기본적인 소켓정보들이 들어 있다
 {
