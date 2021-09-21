@@ -65,8 +65,10 @@ int ClientSock::sendFile(const char *fileName)
     int send_file_size = sendfile(_sock_descriptor, file_descriptor, SEEK_SET, 2147479552);
     if (send_file_size != -1)
     {
+        char printlog[BUFSIZ];
+        int len = sprintf(printlog, "%d bytes data sended sucessfully! filename : %s\n", send_file_size, fileName);
         printf("%d:%d:%d:%d | ", retTime(DAY), retTime(HOUR), retTime(MIN), retTime(SEC));
-        printf("%d bytes data sended sucessfully! filename : %s\n", send_file_size, fileName);
+        printl(printlog, true);
     }
     close(file_descriptor);
     return send_file_size;
@@ -133,3 +135,37 @@ ServerSock::ServerSock()
     printf("Server Open! %s:%u\n\n", "localhost", ntohs(_sock_adress.sin_port));
 }
 /////////////////////////////////////////////////
+void printl(const char *input)
+{
+    char logFolder[32] = LOGFOLDER;
+    int logFileD = open(strcat(logFolder, "log.txt"), O_WRONLY | O_CREAT | O_APPEND);
+    char printlog[BUFSIZ];
+    int len = strlen(input);
+    if (len > 70)
+    {
+        len = sprintf(printlog, "%d:%d:%d:%d \n %s ",
+                      retTime(DAY), retTime(HOUR), retTime(MIN), retTime(SEC), input);
+    }
+    else
+    {
+        len = sprintf(printlog, "%d:%d:%d:%d | %s ",
+                      retTime(DAY), retTime(HOUR), retTime(MIN), retTime(SEC), input);
+    }
+    if (logFileD >= -1 && logFileD <= 2)
+        std::cout
+            << "[ERROR] error code : " << logFileD << std::endl;
+    else
+    {
+        write(logFileD, input, len);
+        close(logFileD);
+    }
+}
+
+void printl(const char *input, bool isStdOut)
+{
+    printl(input);
+    if (isStdOut)
+        printf("%s", input);
+    else
+        perror(input);
+}

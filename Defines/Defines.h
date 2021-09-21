@@ -8,6 +8,10 @@
 
 #define ERROR -1
 
+#define LOGFOLDER "logs/"
+
+#define STDERR 2
+#define STDOUT 1
 //연결 요청 메소드 매크로
 #define UNKNOWN 0
 #define GET 1
@@ -22,3 +26,9 @@
 #define CONNECTTION_REQUEST_MACOR_COUNT 10
 //--------------------//
 #define LOCALHOST 1
+//printlog flags
+#define THISTIME 0b00010000
+#define NEXTLINETIME 0b00100000
+#define BEFLINETIME 0b00110000
+#define PRINTSTDOUT 0b00000001
+#define PRINTSTDERR 0b00000010

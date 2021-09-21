@@ -4,8 +4,6 @@
 #include <queue>
 #include <vector>
 
-#define LOGFOLDER "logs/"
-
 struct ThreadManagement
 {
     ClientSock clientSock;
@@ -14,6 +12,7 @@ struct ThreadManagement
 };
 
 int delayTime = 1; //딜레이 시간
+
 ServerSock serverSock;
 char recieveBuffer[BUFSIZ];
 std::mutex socketQueue_mutex;
@@ -26,5 +25,3 @@ void MainFunction();
 void SendDataFunction();
 void Input(int myAccessPoint);
 int CommandReader();
-
-void printl(const char *);

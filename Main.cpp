@@ -2,35 +2,30 @@
 
 int main()
 {
-    printf("Main Function Start\n"); //main함수의 시작을 알림
+    printl("Main Function Start\n", true); //main함수의 시작을 알림
 
     for (int i = 0; i < READTHREADSIZE; i++)
     {
         management[i].clientSock._sock_descriptor = -1;
-        management[i].readArray = std::thread(Input, i);
-        printf("inputThread %d opened\n", i + 1); //입력 쓰레드 실행
+        management[i].readArray = std::thread(Input, i); //입력 쓰레드 실행
     }
-    std::cout << std::endl;
     for (int i = 0; i < SENDTHREADSIZE; i++)
     {
         sendThread[i] = std::thread(SendDataFunction); //전송 쓰레드 실행
         printf("SendData Thread Opened\n\n");
     }
 
-    std::thread mainThread(MainFunction); //연결 쓰레드 실행
+    std::thread mainThread(MainFunction); //주 쓰레드 실행
     printf("mainThread Opened\n");
 
     CommandReader(); //명령어 처리기 프로그램의 전체적인 흐름을 제어한다
 
     mainThread.join();
     for (int i = 0; i < SENDTHREADSIZE; i++)
-    {
         sendThread[i].join();
-    }
     for (int i = 0; i < READTHREADSIZE; i++)
-    {
         management[i].readArray.join();
-    }
+
     printf("Server Closed Sucessfully");
     return 0;
 }
@@ -72,10 +67,12 @@ extern int CommandReader()
             std::cout << "input delay time : ";
             unsigned int temp_delay_time;
             std::cin >> temp_delay_time;
-            if (temp_delay_time == 0)
+            if (temp_delay_time <= 0)
                 std::cout << "Error\n";
             else
+            {
                 delayTime = temp_delay_time;
+            }
         }
         else if (!strcmp(command, "info"))
             for (int i = 0; i < READTHREADSIZE; i++)
@@ -96,9 +93,9 @@ extern void SendDataFunction()
             socketQueue_mutex.lock();
             clientWaitQueue.pop();
             socketQueue_mutex.unlock();
-            printf("----------------------------------------------------\n");
-            printf("%s", myClient._data._recived_data);
-            printf("----------------------------------------------------\n");
+            printl("----------------------------------------------------\n");
+            printl(myClient._data._recived_data);
+            printl("----------------------------------------------------\n");
             myClient.sendDataAuto();
             close(myClient._sock_descriptor);
         }
@@ -109,6 +106,7 @@ extern void SendDataFunction()
 
 extern void Input(int myAccessPoint)
 {
+    printf("input Thread No.%d Started \n", myAccessPoint);
     for (;;)
     {
         if (management[myAccessPoint].clientSock._sock_descriptor != -1)
@@ -129,14 +127,4 @@ extern void Input(int myAccessPoint)
         else
             usleep(delayTime);
     }
-}
-
-void printl(const char *input)
-{
-    char logFolder[32] = LOGFOLDER;
-    int logFileD = open(strcat(logFolder, "log.txt"), O_WRONLY | O_CREAT);
-    if (logFileD >= -1 && logFileD <= 2)
-        std::cout << "ERROR error code : " << logFileD << std::endl;
-    write(logFileD, input, strlen(input));
-    close(logFileD);
 }
