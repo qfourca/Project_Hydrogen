@@ -29,7 +29,7 @@ int ClientSock::sendDataAuto()
         int temp = sendFile(_data.fileName());
         if (temp == -1) //파일 전송에 에러가 났을 때
         {
-            perror("ERROR!");
+            printl("Error occur when send file\n", PRINTERR);
             sendString("404 not found"); //404전송
         }
     }
@@ -77,12 +77,14 @@ int ClientSock::sendString(const char *dataName)
     int send_data_size = send(_sock_descriptor, dataName, strlen(dataName), MSG_DONTROUTE);
     if (send_data_size == -1)
     {
-        perror("Failed to send message\n");
-        return -1;
+        printl("Failed to send message\n", PRINTERR);
+        return ERROR;
     }
     else
     {
-        printf("data \" %s \" sended sucessfully!\n", dataName);
+        char str[64];
+        sprintf(str, "data \" %s \" sended sucessfully!\n", dataName);
+        printl(str, PRINTOUT);
         return send_data_size;
     }
 }
@@ -92,7 +94,7 @@ ClientSock::ClientSock()
     int sock_opction = 1;
     if (setsockopt(_sock_descriptor, IPPROTO_TCP, TCP_CORK, (const char *)&sock_opction, sizeof(sock_opction)) == -1)
     {
-        perror("ClientSocket Setting Error\n");
+        printl("ClientSocket Setting Error\n", PRINTERR);
         exit(1);
     }
 }
@@ -110,48 +112,50 @@ ServerSock::ServerSock()
     _sock_adress.sin_port = htons(PORT);
     if ((_sock_adress.sin_addr.s_addr = INADDR_ANY) == -1)
     {
-        perror("Wrong IP adress");
+        printl("Wrong IP adress", PRINTERR);
         exit(1);
     }
     if (bind(_sock_descriptor, (struct sockaddr *)&_sock_adress, sizeof(_sock_adress)) == -1)
     {
-        perror("Can not Bind");
+        printl("Can Not Bind", PRINTERR);
         exit(1);
     }
     else
-    {
-        printf("Bind Successed!\n");
-    }
+        printl("Bind Sucessfully", PRINTOUT);
+
     if (listen(_sock_descriptor, 5) == -1)
     {
-        perror("listen Fail");
+        printl("listen fail", PRINTERR);
         exit(1);
     }
     else
     {
-        printf("Listen Successed\n");
+        printl("Listen Successed\n", PRINTOUT);
     }
-    printf("Server Open! %s:%u\n\n", "localhost", ntohs(_sock_adress.sin_port));
+    char str[128];
+    sprintf(str, "Server Open! %s:%u\n\n", "localhost", ntohs(_sock_adress.sin_port));
+    printl(str, PRINTOUT);
 }
 /////////////////////////////////////////////////
 void printl(const char *input, char flag)
 {
-    char logFolder[16] = LOGFOLDER;
-    int logFileD = open(strcat(logFolder, "log.txt"), O_WRONLY | O_CREAT | O_APPEND);
+    char file_name[64];
+    int len = sprintf(file_name, "%s%s%d%s", LOGFOLDER, "log", 1, ".txt");
+    unsigned int logFileD = open(file_name, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IRGRP);
+
     char printlog[BUFSIZ];
     char temp[128];
-    int len = strlen(input);
+    len = strlen(input);
     if (flag & DONTTIME)
         strcpy(printlog, input);
     else
     {
-        strncpy(temp, len > 70 ? "%d:%d:%d:%d \n %s" : "%d:%d:%d:%d | %s", 32);
+        strncpy(temp, len > 70 ? "[%02d:%02d:%02d:%02d]\n%s" : "[%02d:%02d:%02d:%02d] %s", 32);
         len = sprintf(printlog, temp, retTime(DAY), retTime(HOUR), retTime(MIN), retTime(SEC), input);
     }
 
     if (logFileD >= -1 && logFileD <= 2)
-        std::cout
-            << "[ERROR] error code : " << logFileD << std::endl;
+        std::cout << "[ERROR]file open error code : " << logFileD << std::endl;
     else
     {
         if (flag & PRINTOUT)

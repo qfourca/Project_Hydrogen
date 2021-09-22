@@ -9,6 +9,7 @@
 #include <mutex>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <pwd.h>
 #include <stdio.h>
 #include <string>
 #include <sys/sendfile.h>
@@ -28,6 +29,7 @@
 int retTime(int);
 
 //printl 플래그
+#define DEFAULT 0
 #define PRINTOUT 1 << 0 //표준 출력에도 로그를 남길지
 #define PRINTERR 1 << 1 //표준 에러에도 로그를 남길지
 #define DONTTIME 1 << 2 //시간을 출력하지 말지

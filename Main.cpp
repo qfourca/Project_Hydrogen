@@ -12,11 +12,11 @@ int main()
     for (int i = 0; i < SENDTHREADSIZE; i++)
     {
         sendThread[i] = std::thread(SendDataFunction); //전송 쓰레드 실행
-        printf("SendData Thread Opened\n\n");
+        printl("SendData Thread Opened\n", PRINTOUT);
     }
 
     std::thread mainThread(MainFunction); //주 쓰레드 실행
-    printf("mainThread Opened\n");
+    printl("Main Thread Opened\n", PRINTOUT);
 
     CommandReader(); //명령어 처리기 프로그램의 전체적인 흐름을 제어한다
 
@@ -26,7 +26,7 @@ int main()
     for (int i = 0; i < READTHREADSIZE; i++)
         management[i].readArray.join();
 
-    printf("Server Closed Sucessfully");
+    printl("Server closed successfully\n", PRINTOUT);
     return 0;
 }
 
@@ -106,7 +106,9 @@ extern void SendDataFunction()
 
 extern void Input(int myAccessPoint)
 {
-    printf("input Thread No.%d Started \n", myAccessPoint);
+    char str[64];
+    sprintf(str, "input Thread No.%d Started \n", myAccessPoint);
+    printl(str, PRINTOUT);
     for (;;)
     {
         if (management[myAccessPoint].clientSock._sock_descriptor != -1)
