@@ -1,24 +1,5 @@
 #include "SockClass.h"
 
-extern int retTime(int arg)
-{
-    time_t timer = time(NULL);
-    struct tm *t = localtime(&timer);
-    switch (arg)
-    {
-    case SEC:
-        return t->tm_sec;
-    case MIN:
-        return t->tm_min;
-    case HOUR:
-        return t->tm_hour;
-    case DAY:
-        return t->tm_mday;
-    default:
-        return ERROR;
-    }
-}
-
 int ClientSock::sendDataAuto()
 {
 
@@ -29,29 +10,13 @@ int ClientSock::sendDataAuto()
         int temp = sendFile(_data.fileName());
         if (temp == -1) //파일 전송에 에러가 났을 때
         {
-            printl("Error occur when send file\n", PRINTERR);
+            printl("Error occur when send file :", PRINTERR);
+            printl(_data.fileName(), PRINTERR);
+            printl("\n", PRINTERR);
             sendString("404 not found"); //404전송
         }
     }
     return DEFAULT;
-}
-
-////////////////////////----------------------------------////////////////////
-unsigned int Sock::_adressLen = sizeof(sockaddr_in); //주소의 길이
-Sock::Sock()
-{
-    memset(&_sock_adress, 0, sizeof(_sock_adress));
-    _sock_descriptor = socket(PF_INET, SOCK_STREAM, 0);
-}
-///////////////////------------------------------------////////////////////////
-int ClientSock::acceptConnection(int serverSocket)
-{
-    _sock_descriptor = accept(serverSocket, (struct sockaddr *)&_sock_adress, &_adressLen);
-    return 0;
-}
-void ClientSock::acceptSocket(int serverSocket)
-{
-    _sock_descriptor = accept(serverSocket, (struct sockaddr *)&_sock_adress, &_adressLen);
 }
 
 int ClientSock::sendFile(const char *fileName)
@@ -88,6 +53,23 @@ int ClientSock::sendString(const char *dataName)
         return send_data_size;
     }
 }
+////////////////////////----------------------------------////////////////////
+unsigned int Sock::_adressLen = sizeof(sockaddr_in); //주소의 길이
+Sock::Sock()
+{
+    memset(&_sock_adress, 0, sizeof(_sock_adress));
+    _sock_descriptor = socket(PF_INET, SOCK_STREAM, 0);
+}
+///////////////////------------------------------------////////////////////////
+int ClientSock::acceptConnection(int serverSocket)
+{
+    _sock_descriptor = accept(serverSocket, (struct sockaddr *)&_sock_adress, &_adressLen);
+    return 0;
+}
+void ClientSock::acceptSocket(int serverSocket)
+{
+    _sock_descriptor = accept(serverSocket, (struct sockaddr *)&_sock_adress, &_adressLen);
+}
 
 ClientSock::ClientSock()
 {
@@ -109,23 +91,23 @@ char *ClientSock::searchString(const char *string)
 ServerSock::ServerSock()
 {
     _sock_adress.sin_family = AF_INET;
-    _sock_adress.sin_port = htons(PORT);
+    _sock_adress.sin_port = htons(httpPort);
     if ((_sock_adress.sin_addr.s_addr = INADDR_ANY) == -1)
     {
-        printl("Wrong IP adress", PRINTERR);
+        printl("Wrong IP adress\n", PRINTERR);
         exit(1);
     }
-    if (bind(_sock_descriptor, (struct sockaddr *)&_sock_adress, sizeof(_sock_adress)) == -1)
+    if (-1 == bind(_sock_descriptor, (struct sockaddr *)&_sock_adress, sizeof(_sock_adress)))
     {
-        printl("Can Not Bind", PRINTERR);
+        printl("Can Not Bind\n", PRINTERR);
         exit(1);
     }
     else
-        printl("Bind Sucessfully", PRINTOUT);
+        printl("Bind Sucessfully\n", PRINTOUT);
 
     if (listen(_sock_descriptor, 5) == -1)
     {
-        printl("listen fail", PRINTERR);
+        printl("listen fail\n", PRINTERR);
         exit(1);
     }
     else
@@ -133,7 +115,7 @@ ServerSock::ServerSock()
         printl("Listen Successed\n", PRINTOUT);
     }
     char str[128];
-    sprintf(str, "Server Open! %s:%u\n\n", "localhost", ntohs(_sock_adress.sin_port));
+    sprintf(str, "Server Open! %s:%u\n", "localhost", ntohs(_sock_adress.sin_port));
     printl(str, PRINTOUT);
 }
 /////////////////////////////////////////////////
@@ -141,8 +123,15 @@ void printl(const char *input, char flag)
 {
     char file_name[64];
     int len = sprintf(file_name, "%s%s%d%s", LOGFOLDER, "log", 1, ".txt");
-    unsigned int logFileD = open(file_name, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IRGRP);
-
+    unsigned int logFileD = open(file_name, O_WRONLY | O_CREAT | O_APPEND | O_EXCL, S_IRUSR | S_IRGRP);
+    if (logFileD == -1)
+    {
+        struct passwd *sudo;
+        sudo = getpwnam("user");
+        if (-1 == chown(file_name, sudo->pw_uid, sudo->pw_gid))
+            perror("error");
+        logFileD = open(file_name, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IRGRP);
+    }
     char printlog[BUFSIZ];
     char temp[128];
     len = strlen(input);
@@ -164,5 +153,23 @@ void printl(const char *input, char flag)
             write(2, printlog, len);
         write(logFileD, printlog, len);
         close(logFileD);
+    }
+}
+int retTime(int arg)
+{
+    time_t timer = time(NULL);
+    struct tm *t = localtime(&timer);
+    switch (arg)
+    {
+    case SEC:
+        return t->tm_sec;
+    case MIN:
+        return t->tm_min;
+    case HOUR:
+        return t->tm_hour;
+    case DAY:
+        return t->tm_mday;
+    default:
+        return ERROR;
     }
 }

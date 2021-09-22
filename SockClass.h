@@ -70,5 +70,6 @@ class ServerSock : public Sock //서버 클래스
 {
 private:
 public:
+    int httpPort = 80;
     ServerSock(); //포트를 바인딩 하고 직접적으로 서버를 여는 생성자
 };

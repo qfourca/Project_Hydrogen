@@ -1,7 +1,13 @@
 #include "Main.h"
 
-int main()
+int main(int argc, char **argv)
 {
+    if (argc != 2)
+    {
+        perror("argument error");
+        return 0;
+    }
+    serverSock.httpPort = atoi(argv[1]);
     printl("Main Function Start\n", PRINTOUT); //main함수의 시작을 알림
 
     for (int i = 0; i < READTHREADSIZE; i++)
@@ -10,13 +16,9 @@ int main()
         management[i].readArray = std::thread(Input, i); //입력 쓰레드 실행
     }
     for (int i = 0; i < SENDTHREADSIZE; i++)
-    {
         sendThread[i] = std::thread(SendDataFunction); //전송 쓰레드 실행
-        printl("SendData Thread Opened\n", PRINTOUT);
-    }
 
     std::thread mainThread(MainFunction); //주 쓰레드 실행
-    printl("Main Thread Opened\n", PRINTOUT);
 
     CommandReader(); //명령어 처리기 프로그램의 전체적인 흐름을 제어한다
 
@@ -32,6 +34,7 @@ int main()
 
 extern void MainFunction()
 {
+    printl("Main Thread Opened\n", PRINTOUT);
     ClientSock clientSock;
     int arrayIndex = 0;
     for (;;)
@@ -84,6 +87,7 @@ extern int CommandReader()
 
 extern void SendDataFunction()
 {
+    printl("SendData Thread Opened\n", PRINTOUT);
     ClientSock myClient;
     for (;;)
     {
